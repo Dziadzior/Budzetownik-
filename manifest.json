@@ -1,38 +1,38 @@
 {
-    "name": "Budżetownik",
-    "short_name": "Budżet",
-    "description": "Prosty i rozbudowany budżetownik",
-    "start_url": "./index.html",
-    "display": "standalone",
-    "background_color": "#111",
-    "theme_color": "#f00",
-    "icons": [
-        {
-            "src": "web-app-manifest-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "web-app-manifest-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
-    "id": "com.dziadzior.budzetownik",
-    "launch_handler": {
-    "client_mode": "navigate"
-},
-"orientation": "portrait-primary",
-"screenshots": [
+  "name": "Budżetownik",
+  "short_name": "Budżet",
+  "description": "Prosty i rozbudowany budżetownik.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#ffffff",
+  "theme_color": "#ff0000",
+  "icons": [
     {
-        "src": "./screenshot1.png",
-        "sizes": "1080x1920",
-        "type": "image/png"
+      "src": "./icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-        "src": "./screenshot2.png",
-        "sizes": "1080x1920",
-        "type": "image/png"
+      "src": "./icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     }
-],
+  ],
+  "screenshots": [
+    {
+      "src": "./screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "./screenshot2.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ],
+  "id": "com.dziadzior.budzetownik",
+  "launch_handler": {
+    "client_mode": "navigate"
+  }
 }
