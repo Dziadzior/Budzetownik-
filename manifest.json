@@ -34,5 +34,36 @@
   ],
   "launch_handler": {
     "client_mode": "navigate"
-  }
+  },
+  "shortcuts": [
+    {
+      "name": "Dodaj wydatek",
+      "short_name": "Wydatek",
+      "description": "Dodaj nowy wydatek",
+      "url": "/index.html#dodaj-wydatek",
+      "icons": [
+        {
+          "src": "./icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Przeglądaj raporty",
+      "short_name": "Raporty",
+      "description": "Przeglądaj raporty budżetowe",
+      "url": "/index.html#raporty",
+      "icons": [
+        {
+          "src": "./icon-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "display_override": [
+    "window-controls-overlay",
+    "minimal-ui",
+    "fullscreen"
+  ]
 }

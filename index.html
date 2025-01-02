@@ -81,6 +81,14 @@
           console.error('Rejestracja Service Workera nie powiodła się:', error);
         });
     }
+
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+          console.log('Powiadomienia są włączone.');
+        }
+      });
+    }
   </script>
 </body>
 </html>
