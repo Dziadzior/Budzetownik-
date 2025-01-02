@@ -7,6 +7,7 @@
   "orientation": "portrait-primary",
   "background_color": "#ffffff",
   "theme_color": "#ff0000",
+  "id": "com.dziadzior.budzetownik",
   "icons": [
     {
       "src": "./web-app-manifest-192x192.png",
@@ -18,5 +19,20 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "./Screen-1.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "./Screen-2.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "navigate"
+  }
 }
