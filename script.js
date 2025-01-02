@@ -110,28 +110,34 @@ filterButtons.forEach(button => {
     });
 });
 
-exportCsvButton.addEventListener('click', () => {
-    const csvContent = "data:text/csv;charset=utf-8," + ["Opis,Kategoria,Kwota"]
-        .concat(transactions.map(({ description, category, amount }) => `${description},${category},${amount.toFixed(2)}`))
-        .join('\n');
-    const link = document.createElement('a');
-    link.setAttribute('href', encodeURI(csvContent));
-    link.setAttribute('download', 'transactions.csv');
-    link.click();
-});
+function exportToCSV() {
+  const data = [
+    ['Kategoria', 'Opis', 'Kwota'],
+    ['Wydatki', 'Rachunek za prąd', '-100'],
+    ['Przychody', 'Pensja', '+3000']
+  ];
 
-exportExcelButton.addEventListener('click', () => {
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(
-        transactions.map(({ description, category, amount }) => ({
-            Opis: description,
-            Kategoria: category,
-            Kwota: amount.toFixed(2),
-        }))
-    );
-    XLSX.utils.book_append_sheet(wb, ws, 'Transakcje');
-    XLSX.writeFile(wb, 'transactions.xlsx');
-});
+  const csvContent = data.map(row => row.join(',')).join('\n');
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', 'data.csv');
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function exportToExcel() {
+  const data = [
+    { Kategoria: 'Wydatki', Opis: 'Rachunek za prąd', Kwota: '-100' },
+    { Kategoria: 'Przychody', Opis: 'Pensja', Kwota: '+3000' }
+  ];
+
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+  XLSX.writeFile(workbook, 'data.xlsx');
+}
 
 renderTransactions();
 updateChart();

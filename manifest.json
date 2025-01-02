@@ -20,21 +20,6 @@
       "type": "image/png"
     }
   ],
-  "screenshots": [
-    {
-      "src": "./Screen-1.jpg",
-      "sizes": "1080x1920",
-      "type": "image/png"
-    },
-    {
-      "src": "./Screen-2.jpg",
-      "sizes": "1080x1920",
-      "type": "image/png"
-    }
-  ],
-  "launch_handler": {
-    "client_mode": "navigate"
-  },
   "shortcuts": [
     {
       "name": "Dodaj wydatek",
@@ -47,23 +32,38 @@
           "sizes": "192x192"
         }
       ]
-    },
-    {
-      "name": "Przeglądaj raporty",
-      "short_name": "Raporty",
-      "description": "Przeglądaj raporty budżetowe",
-      "url": "/index.html#raporty",
-      "icons": [
-        {
-          "src": "./icon-192x192.png",
-          "sizes": "192x192"
-        }
-      ]
     }
   ],
-  "display_override": [
-    "window-controls-overlay",
-    "minimal-ui",
-    "fullscreen"
+  "display_override": ["minimal-ui"],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "shared-title",
+      "text": "shared-text",
+      "url": "shared-url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "/open-file",
+      "accept": {
+        "application/json": [".json"],
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "./Screen-1.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    },
+    {
+      "src": "./Screen-2.jpg",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
   ]
 }
