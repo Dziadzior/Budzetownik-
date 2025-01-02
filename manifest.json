@@ -18,4 +18,21 @@
             "type": "image/png"
         }
     ]
+    "id": "com.dziadzior.budzetownik",
+    "launch_handler": {
+    "client_mode": "navigate"
+},
+"orientation": "portrait-primary",
+"screenshots": [
+    {
+        "src": "./screenshot1.png",
+        "sizes": "1080x1920",
+        "type": "image/png"
+    },
+    {
+        "src": "./screenshot2.png",
+        "sizes": "1080x1920",
+        "type": "image/png"
+    }
+],
 }
