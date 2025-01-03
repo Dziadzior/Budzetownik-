@@ -37,7 +37,7 @@ h1 {
 .balance {
     text-align: center;
     margin: 20px 0;
-    font-size: 2em; /* Powiększone saldo */
+    font-size: 2em;
     font-weight: bold;
     color: #0f0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -147,28 +147,26 @@ form button:hover {
     margin: 20px 0;
 }
 
-/* Element listy transakcji */
 #transaction-list li {
     background: #333;
     margin: 10px 0;
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Ikona, szczegóły, kwota/przycisk */
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
 }
 
-/* Ikona */
+/* Szczegóły transakcji */
 .transaction-icon {
     font-size: 1.8em;
     text-align: center;
     align-self: center;
 }
 
-/* Szczegóły transakcji */
 .transaction-details {
     display: flex;
     flex-direction: column;
@@ -184,6 +182,7 @@ form button:hover {
 .transaction-category {
     font-size: 0.9em;
     color: #aaa;
+    font-style: italic;
 }
 
 /* Kwota transakcji */
@@ -192,9 +191,8 @@ form button:hover {
     font-weight: bold;
     text-align: right;
     white-space: nowrap;
-    overflow: hidden; /* Zapobieganie wyciekowi */
-    text-overflow: ellipsis; /* Dodanie elipsy w razie braku miejsca */
-    max-width: 120px; /* Ustawienie maksymalnej szerokości */
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .transaction-amount.positive {
@@ -205,7 +203,7 @@ form button:hover {
     color: #f00;
 }
 
-/* Przyciski */
+/* Przycisk Usuń */
 button.delete-btn {
     background: #555;
     color: #fff;
@@ -215,11 +213,8 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center; /* Wyśrodkowanie w siatce */
-    align-self: center; /* Wyśrodkowanie pionowe */
+    justify-self: center;
     transition: background 0.3s;
-    width: 60px; /* Ograniczenie szerokości */
-    height: 40px; /* Proporcjonalna wysokość */
 }
 
 button.delete-btn:hover {
@@ -267,7 +262,7 @@ button.delete-btn:hover {
     }
 
     #transaction-list li {
-        grid-template-columns: 30px 1fr 60px;
+        grid-template-columns: 30px 1fr auto;
         padding: 10px 15px;
     }
 
@@ -280,8 +275,7 @@ button.delete-btn:hover {
     }
 
     button.delete-btn {
-        max-width: 50px;
-        height: 35px;
-        font-size: 0.8em;
+        max-width: 40px;
+        padding: 8px;
     }
 }
