@@ -146,6 +146,7 @@ form button:hover {
     display: flex;
     flex-direction: column;
     flex: 1;
+    justify-content: center; /* Wyśrodkowanie pionowe */
 }
 
 .transaction-description {
@@ -171,6 +172,7 @@ form button:hover {
     color: #f00;
 }
 
+/* Przycisk Usuń */
 button.delete-btn {
     background: #555;
     color: #fff;
@@ -180,10 +182,9 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center;
-    align-self: center;
-    width: 100%;
-    max-width: 50px;
+    justify-self: end; /* Wyrównanie do prawej */
+    align-self: center; /* Wyśrodkowanie pionowe */
+    max-width: 50px; /* Maksymalna szerokość */
     transition: background 0.3s;
 }
 
