@@ -136,7 +136,8 @@ transactionForm.addEventListener('submit', (e) => {
         return;
     }
 
-    const convertedAmount = convertCurrency(amount, currency);
+    // Przelicz walutę tylko przy dodawaniu nowych transakcji
+    const convertedAmount = currency !== 'PLN' ? convertCurrency(amount, currency) : amount;
 
     const transaction = {
         id: Date.now().toString(),
@@ -151,6 +152,7 @@ transactionForm.addEventListener('submit', (e) => {
     renderTransactions();
     updateBalance();
     updateChart();
+    updateCategorySummary();
     transactionForm.reset();
 });
 
@@ -161,7 +163,10 @@ function convertCurrency(amount, currency) {
         EUR: 4.8,
     };
 
-    return amount * exchangeRates[currency];
+    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
+    const convertedAmount = amount * exchangeRates[currency];
+    console.log(`Po przeliczeniu: ${convertedAmount}`);
+    return convertedAmount;
 }
 
 function editTransaction(id) {
@@ -169,15 +174,16 @@ function editTransaction(id) {
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.amount; // Poprawka
+    document.getElementById('amount').value = transaction.amount / (transaction.currency === 'PLN' ? 1 : convertCurrency(1, transaction.currency));
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
     transactions = transactions.filter(t => t.id !== id);
+    saveTransactions();
     renderTransactions();
     updateBalance();
     updateChart();
-    updateCategorySummary(); // Upewnij się, że działa po edycji
+    updateCategorySummary();
 }
 
 filterButtons.forEach(button => {
