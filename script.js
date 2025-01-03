@@ -136,8 +136,7 @@ transactionForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Przelicz walutę tylko przy dodawaniu nowych transakcji
-    const convertedAmount = currency !== 'PLN' ? convertCurrency(amount, currency) : amount;
+    const convertedAmount = convertCurrency(amount, currency);
 
     const transaction = {
         id: Date.now().toString(),
@@ -152,7 +151,6 @@ transactionForm.addEventListener('submit', (e) => {
     renderTransactions();
     updateBalance();
     updateChart();
-    updateCategorySummary();
     transactionForm.reset();
 });
 
@@ -162,6 +160,9 @@ function convertCurrency(amount, currency) {
         USD: 4.5,
         EUR: 4.8,
     };
+    
+    if (currency === 'PLN') return amount; // Bez przeliczania dla PLN
+    return amount * exchangeRates[currency];
 
     console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
     const convertedAmount = amount * exchangeRates[currency];
