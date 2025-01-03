@@ -130,7 +130,7 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr 50px; /* Dopasowanie przycisku Usuń */
+    grid-template-columns: 40px 1fr auto; /* Dostosowanie do dynamicznej szerokości przycisku */
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -178,44 +178,16 @@ button.delete-btn {
     color: #fff;
     border: none;
     border-radius: 5px;
-    padding: 10px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center; /* Centrowanie w siatce */
-    align-self: center; /* Centrowanie w pionie */
-    width: 100%; /* Dopasowanie szerokości */
-    max-width: 50px; /* Ograniczenie szerokości */
+    justify-self: end; /* Wyrównanie do prawej */
     transition: background 0.3s;
 }
 
 button.delete-btn:hover {
     background: #f00;
-}
-
-/* Eksport */
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.export-buttons button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: #444;
-    color: #fff;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.export-buttons button:hover {
-    background: #666;
-    transform: translateY(-2px);
 }
 
 /* Responsywność */
