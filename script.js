@@ -13,12 +13,18 @@ let chart;
 function updateBalance() {
     balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
-    balanceElement.style.color = balance > 0 ? '#0f0' : balance < 0 ? '#f00' : '#fff';
+
+    if (balance > 0) {
+        balanceElement.className = 'positive';
+    } else if (balance < 0) {
+        balanceElement.className = 'negative';
+    } else {
+        balanceElement.className = 'zero';
+    }
 }
 
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
-
     const categoryIcon = document.querySelector(
         `option[value="${transaction.category}"]`
     )?.getAttribute("data-icon") || "❓";
@@ -34,7 +40,6 @@ function addTransactionToList(transaction) {
         </div>
         <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
     `;
-
     transactionList.appendChild(li);
 }
 
@@ -109,38 +114,6 @@ filterButtons.forEach(button => {
         renderTransactions(button.dataset.filter);
     });
 });
-
-function exportToCSV() {
-    const data = [['Kategoria', 'Opis', 'Kwota']];
-    transactions.forEach(({ category, description, amount }) => {
-        data.push([category, description, `${amount > 0 ? '+' : ''}${amount.toFixed(2)}`]);
-    });
-
-    const csvContent = data.map(row => row.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.setAttribute('download', 'transactions.csv');
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function exportToExcel() {
-    const data = transactions.map(({ category, description, amount }) => ({
-        Kategoria: category,
-        Opis: description,
-        Kwota: `${amount > 0 ? '+' : ''}${amount.toFixed(2)}`
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
-    XLSX.writeFile(workbook, 'transactions.xlsx');
-}
-
-exportCsvButton.addEventListener('click', exportToCSV);
-exportExcelButton.addEventListener('click', exportToExcel);
 
 renderTransactions();
 updateChart();
