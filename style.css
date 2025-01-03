@@ -130,7 +130,7 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr 50px; /* Dostosowanie dla przycisku Usuń */
+    grid-template-columns: 40px 1fr 50px; /* Dopasowanie przycisku Usuń */
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
