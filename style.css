@@ -154,6 +154,26 @@ form button:hover {
     margin: 20px 0;
 }
 
+.transaction-amount {
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: right; /* Wyrównanie tekstu do prawej */
+    align-self: center; /* Wyśrodkowanie w pionie */
+    white-space: nowrap; /* Zapobieganie łamaniu tekstu */
+    width: 100%; /* Dopasowanie do szerokości kolumny */
+    max-width: 100px; /* Ograniczenie szerokości */
+    justify-self: end; /* Wyrównanie do prawej strony w siatce */
+}
+
+.transaction-amount.positive {
+    color: #0f0; /* Zielony dla przychodów */
+}
+
+.transaction-amount.negative {
+    color: #f00; /* Czerwony dla wydatków */
+}
+
+/* Lista transakcji */
 #transaction-list li {
     background: #333;
     margin: 10px 0;
@@ -178,33 +198,6 @@ form button:hover {
     flex-direction: column;
     justify-content: center; /* Centrowanie w pionie */
     flex: 1; /* Elastyczna szerokość */
-}
-
-.transaction-description {
-    font-size: 1.2em;
-    font-weight: bold;
-    margin-bottom: 5px; /* Lekki odstęp między opisem a kategorią */
-}
-
-.transaction-category {
-    font-size: 0.9em;
-    color: #aaa;
-}
-
-.transaction-amount {
-    font-size: 1.3em;
-    font-weight: bold;
-    text-align: right; /* Wyrównanie tekstu do prawej */
-    align-self: center; /* Wyśrodkowanie w pionie */
-    white-space: nowrap; /* Zapobieganie łamaniu tekstu */
-}
-
-.transaction-amount.positive {
-    color: #0f0; /* Zielony dla przychodów */
-}
-
-.transaction-amount.negative {
-    color: #f00; /* Czerwony dla wydatków */
 }
 
 button.delete-btn {
