@@ -6,7 +6,7 @@ const urlsToCache = [
   './script.js?v=1',
   './manifest.json?v=1',
   './web-app-manifest-192x192.png?v=1',
-  './web-app-manifest-512x512.png?v=1'
+  './web-app-manifest-512x512.png?v=1', 'https://cdn.jsdelivr.net/npm/chart.js',
 ];
 
 // Instalacja Service Workera i dodanie plików do cache
