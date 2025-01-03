@@ -28,7 +28,6 @@
     <option value="PLN">PLN</option>
     <option value="USD">USD</option>
     <option value="EUR">EUR</option>
-    <option value="GBP">GBP</option>
   </select>
 </div>
     <div id="form-errors" class="error-messages"></div>
@@ -105,6 +104,10 @@
       <button id="export-csv">Eksportuj do CSV</button>
       <button id="export-excel">Eksportuj do Excel</button>
     </div>
+    <div id="category-summary">
+  <h3>Podsumowanie wydatków według kategorii</h3>
+  <ul id="summary-list"></ul>
+</div>
     <canvas id="expense-chart" width="400" height="200"></canvas>
   </div>
   <script src="script.js"></script>

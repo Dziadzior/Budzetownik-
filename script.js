@@ -96,6 +96,31 @@ function updateChart() {
     });
 }
 
+function updateCategorySummary() {
+  const summaryList = document.getElementById('summary-list');
+  const categories = {};
+
+  // Oblicz sumy dla każdej kategorii
+  transactions.forEach(({ amount, category }) => {
+    if (amount < 0) {
+      categories[category] = (categories[category] || 0) + Math.abs(amount);
+    }
+  });
+
+  // Wyczyść listę podsumowania
+  summaryList.innerHTML = '';
+
+  // Dodaj podsumowanie do listy
+  for (const [category, total] of Object.entries(categories)) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>${category}</span>
+      <span>${total.toFixed(2)} zł</span>
+    `;
+    summaryList.appendChild(li);
+  }
+}
+
 transactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -161,6 +186,8 @@ filterButtons.forEach(button => {
     });
 });
 
+saveTransactions();
 renderTransactions();
-updateChart();
 updateBalance();
+updateChart();
+updateCategorySummary();

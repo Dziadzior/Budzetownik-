@@ -94,6 +94,41 @@ form input, form select, form button {
     color: #fff;
 }
 
+#category-summary {
+  background: #222;
+  margin: 20px 0;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+#category-summary h3 {
+  color: #fff;
+  margin-bottom: 10px;
+}
+
+#summary-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#summary-list li {
+  background: #333;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #fff;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+#summary-list li span {
+  font-weight: bold;
+}
+
 .currency-wrapper {
     display: flex;
     flex-direction: column;
