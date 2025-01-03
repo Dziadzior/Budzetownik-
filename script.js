@@ -35,9 +35,9 @@ function addTransactionToList(transaction) {
             <div class="transaction-description">${transaction.description}</div>
             <div class="transaction-category">${transaction.category}</div>
         </div>
-        <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
-            ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
-            (${transaction.currency})
+        <div class="transaction-amount ${transaction.convertedAmount > 0 ? 'positive' : 'negative'}">
+            ${transaction.convertedAmount > 0 ? '+' : ''}${transaction.convertedAmount} zł 
+            (${transaction.originalAmount} ${transaction.currency})
         </div>
         <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
     `;
@@ -92,7 +92,7 @@ function updateChart() {
     });
 }
 
-transactionForm.addEventListener('submit', (e) => {
+ransactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
@@ -112,12 +112,13 @@ transactionForm.addEventListener('submit', (e) => {
     }
 
     // Przeliczanie kwoty na główną walutę (PLN)
-    const convertedAmount = amount * exchangeRates[currency];
+    const convertedAmount = (amount * exchangeRates[currency]).toFixed(2);
 
     const transaction = { 
         id: Date.now().toString(), 
         description, 
-        amount: convertedAmount, 
+        originalAmount: amount.toFixed(2),
+        convertedAmount, 
         category, 
         currency 
     };
