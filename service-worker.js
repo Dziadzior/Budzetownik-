@@ -1,75 +1,77 @@
-const CACHE_NAME = 'budzetownik-cache-v6';
+const CACHE_NAME = 'budzetownik-cache-v1';
+
 const urlsToCache = [
-  './',
-  './index.html',
-  './style.css',
-  './script.js',
-  './manifest.json',
-  './web-app-manifest-192x192.png',
-  './web-app-manifest-512x512.png',
-  'https://cdn.jsdelivr.net/npm/chart.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+  './index.html?v=1',
+  './style.css?v=1',
+  './script.js?v=1',
+  './manifest.json?v=1',
+  './web-app-manifest-192x192.png?v=1',
+  './web-app-manifest-512x512.png?v=1'
 ];
 
-// Instalacja Service Worker i dodanie plików do cache
+// Instalacja Service Workera i dodanie plików do cache
 self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Instalacja...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Otwieranie cache i dodawanie plików');
+      console.log('[Service Worker] Dodawanie plików do cache');
       return cache.addAll(urlsToCache);
-    }).catch((error) => {
-      console.error('Błąd podczas dodawania plików do cache:', error);
     })
   );
 });
 
 // Przechwytywanie żądań i serwowanie z cache
 self.addEventListener('fetch', (event) => {
+  console.log(`[Service Worker] Przechwytywanie żądania: ${event.request.url}`);
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      // Jeśli plik znajduje się w cache, zwróć go, w przeciwnym razie pobierz z sieci
-      return response || fetch(event.request).catch(() => {
-        console.warn('Błąd podczas pobierania zasobu:', event.request.url);
-      });
-    })
+    fetch(event.request)
+      .then((response) => {
+        const clonedResponse = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, clonedResponse);
+        });
+        return response;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
 
-// Usuwanie starych wersji cache przy aktywacji nowego Service Worker
+// Usuwanie starego cache i aktywacja nowego Service Worker
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME];
+  console.log('[Service Worker] Aktywacja...');
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            console.log('Usuwanie starego cache:', cacheName);
+          if (cacheName !== CACHE_NAME) {
+            console.log(`[Service Worker] Usuwanie starego cache: ${cacheName}`);
             return caches.delete(cacheName);
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim(); // Natychmiastowe przejęcie kontroli
     })
   );
 });
 
 // Obsługa notyfikacji push
 self.addEventListener('push', (event) => {
-  if (!event.data) {
-    console.warn('Otrzymano pustą wiadomość push');
-    return;
-  }
-
   const data = event.data.json();
-  console.log('Otrzymano powiadomienie push:', data);
-
+  console.log('[Service Worker] Otrzymano powiadomienie push:', data);
   self.registration.showNotification(data.title, {
     body: data.body,
     icon: './web-app-manifest-192x192.png',
-    badge: './web-app-manifest-192x192.png'
   });
 });
 
-// Dodanie obsługi błędów dla cache
-self.addEventListener('error', (event) => {
-  console.error('Błąd Service Worker:', event);
+// Obsługa synchronizacji w tle (opcjonalne, jeśli jest obsługiwane w aplikacji)
+self.addEventListener('sync', (event) => {
+  if (event.tag === 'sync-transactions') {
+    console.log('[Service Worker] Synchronizacja w tle...');
+    event.waitUntil(
+      // Tutaj można dodać logikę synchronizacji np. transakcji z serwerem
+      Promise.resolve()
+    );
+  }
 });
