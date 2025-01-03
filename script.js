@@ -3,7 +3,7 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const exportCsvButton = document.getElementById('export-csv');
 const exportExcelButton = document.getElementById('export-excel');
-const ctx = document.getElementById('expense-chart').getContext('2d');
+const ctx = document.getElementById('expense-chart')?.getContext('2d');
 const filterButtons = document.querySelectorAll('.filter');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -64,6 +64,11 @@ function renderTransactions(filter = 'all') {
 }
 
 function updateChart() {
+    if (!ctx || typeof Chart === 'undefined') {
+        console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
+        return;
+    }
+
     const categories = {};
     transactions.forEach(({ amount, category }) => {
         if (amount < 0) categories[category] = (categories[category] || 0) + Math.abs(amount);
@@ -86,7 +91,7 @@ function updateChart() {
     });
 }
 
-transactionForm.addEventListener('submit', (e) => {
+transactionForm?.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
@@ -115,6 +120,7 @@ filterButtons.forEach(button => {
     });
 });
 
+// Inicjalizacja danych i wykresów
 renderTransactions();
 updateChart();
 updateBalance();

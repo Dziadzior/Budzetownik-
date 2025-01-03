@@ -37,7 +37,7 @@ h1 {
 .balance {
     text-align: center;
     margin: 20px 0;
-    font-size: 2em; /* Powiększone saldo */
+    font-size: 2em; 
     font-weight: bold;
     color: #0f0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -147,57 +147,47 @@ form button:hover {
     margin: 20px 0;
 }
 
-/* Lista transakcji */
-#transaction-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0;
-}
-
-.transaction-amount {
-    font-size: 1.3em;
-    font-weight: bold;
-    text-align: right; /* Wyrównanie tekstu do prawej */
-    align-self: center; /* Wyśrodkowanie w pionie */
-    white-space: nowrap; /* Zapobieganie łamaniu tekstu */
-    width: 100%; /* Dopasowanie do szerokości kolumny */
-    max-width: 100px; /* Ograniczenie szerokości */
-    justify-self: end; /* Wyrównanie do prawej strony w siatce */
-}
-
-.transaction-amount.positive {
-    color: #0f0; /* Zielony dla przychodów */
-}
-
-.transaction-amount.negative {
-    color: #f00; /* Czerwony dla wydatków */
-}
-
-/* Lista transakcji */
 #transaction-list li {
     background: #333;
     margin: 10px 0;
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Kwota */
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
 }
 
+/* Szczegóły transakcji */
 .transaction-icon {
     font-size: 1.8em;
     text-align: center;
-    align-self: center; /* Wyśrodkowanie w pionie */
+    align-self: center;
 }
 
 .transaction-details {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centrowanie w pionie */
-    flex: 1; /* Elastyczna szerokość */
+    justify-content: center;
+    flex: 1;
+}
+
+.transaction-amount {
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+    align-self: center;
+}
+
+.transaction-amount.positive {
+    color: #0f0;
+}
+
+.transaction-amount.negative {
+    color: #f00;
 }
 
 button.delete-btn {
@@ -209,8 +199,6 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center; /* Wyśrodkowanie w siatce */
-    align-self: center; /* Wyśrodkowanie w pionie */
     transition: background 0.3s;
 }
 
@@ -261,10 +249,6 @@ button.delete-btn:hover {
     #transaction-list li {
         grid-template-columns: 30px 1fr 50px;
         padding: 10px 15px;
-    }
-
-    .transaction-description {
-        font-size: 1em;
     }
 
     .transaction-amount {

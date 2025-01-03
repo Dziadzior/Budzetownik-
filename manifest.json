@@ -25,7 +25,19 @@
       "name": "Dodaj wydatek",
       "short_name": "Wydatek",
       "description": "Dodaj nowy wydatek",
-      "url": "/index.html#dodaj-wydatek",
+      "url": "./index.html#dodaj-wydatek",
+      "icons": [
+        {
+          "src": "./web-app-manifest-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Podgląd wykresu",
+      "short_name": "Wykres",
+      "description": "Zobacz podsumowanie wydatków",
+      "url": "./index.html#podglad-wykresu",
       "icons": [
         {
           "src": "./web-app-manifest-192x192.png",
@@ -34,9 +46,9 @@
       ]
     }
   ],
-  "display_override": ["minimal-ui"],
+  "display_override": ["standalone", "minimal-ui"],
   "share_target": {
-    "action": "/share",
+    "action": "./index.html#share",
     "method": "POST",
     "enctype": "multipart/form-data",
     "params": {
@@ -47,7 +59,7 @@
   },
   "file_handlers": [
     {
-      "action": "/open-file",
+      "action": "./open-file",
       "accept": {
         "application/json": [".json"],
         "text/plain": [".txt"]

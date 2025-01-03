@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budzetownik-cache-v1';
+const CACHE_NAME = 'budzetownik-cache-vr5'; // Zwiększona wersja cache
 const urlsToCache = [
   './',
   './index.html',
@@ -11,32 +11,44 @@ const urlsToCache = [
 
 // Instalacja Service Worker i dodanie plików do cache
 self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Instalacja...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('Otwieranie cache');
-      return cache.addAll(urlsToCache);
+      console.log('[Service Worker] Dodawanie do cache:', urlsToCache);
+      return cache.addAll(urlsToCache).catch((error) => {
+        console.error('[Service Worker] Błąd przy dodawaniu do cache:', error);
+      });
     })
   );
 });
 
 // Przechwytywanie żądań i serwowanie z cache
 self.addEventListener('fetch', (event) => {
+  console.log('[Service Worker] Przechwytywanie żądania:', event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
+      if (response) {
+        console.log('[Service Worker] Serwowanie z cache:', event.request.url);
+        return response;
+      }
+      console.log('[Service Worker] Pobieranie z sieci:', event.request.url);
+      return fetch(event.request).catch((error) => {
+        console.error('[Service Worker] Błąd pobierania z sieci:', error);
+      });
     })
   );
 });
 
 // Usuwanie starych wersji cache przy aktywacji nowego Service Worker
 self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Aktywacja...');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (!cacheWhitelist.includes(cacheName)) {
-            console.log('Usuwanie starego cache:', cacheName);
+            console.log('[Service Worker] Usuwanie starego cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -47,10 +59,34 @@ self.addEventListener('activate', (event) => {
 
 // Obsługa notyfikacji push
 self.addEventListener('push', (event) => {
+  if (!event.data) {
+    console.error('[Service Worker] Brak danych w powiadomieniu push.');
+    return;
+  }
   const data = event.data.json();
-  console.log('Otrzymano powiadomienie push:', data);
+  console.log('[Service Worker] Otrzymano powiadomienie push:', data);
   self.registration.showNotification(data.title, {
     body: data.body,
     icon: './web-app-manifest-192x192.png',
+    tag: data.tag || 'budzetownik-notification' // Dodano tag do zarządzania powiadomieniami
   });
+});
+
+// Obsługa zamknięcia powiadomienia
+self.addEventListener('notificationclose', (event) => {
+  console.log('[Service Worker] Powiadomienie zamknięte:', event.notification.tag);
+});
+
+// Obsługa kliknięcia w powiadomienie
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Kliknięto powiadomienie:', event.notification.tag);
+  event.notification.close(); // Zamknij powiadomienie
+  event.waitUntil(
+    clients.matchAll({ type: 'window' }).then((clientList) => {
+      if (clientList.length > 0) {
+        return clientList[0].focus();
+      }
+      return clients.openWindow('./index.html');
+    })
+  );
 });
