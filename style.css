@@ -37,7 +37,7 @@ h1 {
 .balance {
     text-align: center;
     margin: 20px 0;
-    font-size: 2em; /* Powiększone saldo */
+    font-size: 2em;
     font-weight: bold;
     color: #0f0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -153,7 +153,7 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Przycisk */
+    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Kwota */
     align-items: center; /* Centruje elementy w pionie */
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -165,33 +165,45 @@ form button:hover {
     font-size: 1.3em;
     font-weight: bold;
     text-align: right;
-    align-self: center; /* Centruje tekst w pionie */
-    white-space: nowrap; /* Zapobiega łamaniu tekstu */
-    overflow: visible; /* Zapewnia widoczność całej kwoty */
-    margin-right: 10px; /* Odstęp od prawej krawędzi */
+    align-self: center;
+    white-space: nowrap;
+    overflow: visible;
+    margin-right: 10px;
 }
 
 .transaction-amount.positive {
-    color: #0f0; /* Zielony dla przychodów */
+    color: #0f0;
 }
 
 .transaction-amount.negative {
-    color: #f00; /* Czerwony dla wydatków */
+    color: #f00;
 }
 
 /* Ikona transakcji */
 .transaction-icon {
     font-size: 1.8em;
     text-align: center;
-    align-self: center; /* Wyśrodkowanie w pionie */
+    align-self: center;
 }
 
 /* Szczegóły transakcji */
 .transaction-details {
     display: flex;
     flex-direction: column;
-    justify-content: center; /* Centrowanie w pionie */
-    flex: 1; /* Elastyczna szerokość */
+    justify-content: center;
+    flex: 1;
+}
+
+.transaction-description {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.transaction-category {
+    font-size: 0.9em;
+    color: #aaa;
+    font-style: italic;
 }
 
 /* Przycisk Usuń */
@@ -204,10 +216,10 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    align-self: center; /* Centruje przycisk w pionie */
-    justify-self: center; /* Centruje przycisk w poziomie */
-    width: 80px; /* Stała szerokość przycisku */
-    height: 40px; /* Stała wysokość przycisku */
+    align-self: center;
+    justify-self: center;
+    width: 80px;
+    height: 40px;
     transition: background 0.3s;
 }
 
