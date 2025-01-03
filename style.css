@@ -196,61 +196,49 @@ form button:hover {
 }
 
 /* Przycisk Usuń */
+/* Poprawiony styl przycisków */
+button.edit-btn,
 button.delete-btn {
-    background: #555;
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 4px;
+    font-size: 0.9em;
+    font-weight: bold;
     color: #fff;
+    background-color: #007bff;
     border: none;
     border-radius: 5px;
-    padding: 8px 12px;
     cursor: pointer;
-    font-size: 0.9em;
+    transition: background-color 0.3s ease, transform 0.2s ease;
     text-align: center;
-    justify-self: center;
-    align-self: center;
-    transition: background 0.3s;
 }
 
-button.delete-btn:hover {
-    background: #f00;
-}
-
-button.edit-btn {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.9em;
-    margin-right: 10px;
-    transition: background 0.3s;
+button.delete-btn {
+    background-color: #dc3545;
 }
 
 button.edit-btn:hover {
-    background: #0056b3;
-}
-
-button.delete-btn {
-    background: #dc3545;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 8px 12px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background 0.3s;
+    background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 button.delete-btn:hover {
-    background: #a71d2a;
+    background-color: #a71d2a;
+    transform: translateY(-2px);
 }
 
-/* Układ przycisków */
+/* Wyrównanie przycisków w kontenerze */
 #transaction-list li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px;
+    padding: 15px 10px;
+    gap: 10px;
+}
+
+.transaction-actions {
+    display: flex;
+    gap: 10px;
 }
 
 /* Eksport */
