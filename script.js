@@ -35,19 +35,19 @@ function addTransactionToList(transaction) {
     )?.getAttribute("data-icon") || "❓";
 
     li.innerHTML = `
-    <span class="transaction-icon">${categoryIcon}</span>
-    <div class="transaction-details">
-        <div class="transaction-description">${transaction.description}</div>
-        <div class="transaction-category">${transaction.category}</div>
-    </div>
-    <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
-        ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
-    </div>
-    <div class="transaction-actions">
-        <button class="edit-btn" onclick="editTransaction('${transaction.id}')">Edytuj</button>
-        <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
-    </div>
-`;
+        <span class="transaction-icon">${categoryIcon}</span>
+        <div class="transaction-details">
+            <div class="transaction-description">${transaction.description}</div>
+            <div class="transaction-category">${transaction.category}</div>
+        </div>
+        <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
+            ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
+        </div>
+        <div class="transaction-actions">
+            <button class="edit-btn" onclick="editTransaction('${transaction.id}')">Edytuj</button>
+            <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
+        </div>
+    `;
     transactionList.appendChild(li);
 }
 
