@@ -11,7 +11,12 @@ let balance = 0;
 let chart;
 
 function updateBalance() {
-    balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    // Użycie metody reduce, upewniając się, że każda kwota jest liczbą
+    balance = transactions.reduce((total, transaction) => {
+        const amount = parseFloat(transaction.convertedAmount) || 0;
+        return total + amount;
+    }, 0);
+
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
     if (balance > 0) {
@@ -101,26 +106,26 @@ transactionForm.addEventListener('submit', (e) => {
     const currency = document.getElementById('currency').value;
 
     // Walidacja pól formularza
-    let errors = [];
-    if (!description) errors.push("Opis jest wymagany.");
-    if (isNaN(amount) || amount === 0) errors.push("Kwota musi być liczbą większą lub mniejszą od zera.");
-    if (!category) errors.push("Kategoria jest wymagana.");
-    if (!currency) errors.push("Waluta jest wymagana.");
-
-    if (errors.length > 0) {
-        alert(errors.join('\n'));
+    if (!description || isNaN(amount) || !category || !currency) {
+        alert('Wypełnij poprawnie wszystkie pola!');
         return;
     }
 
-    // Przeliczanie kwoty na PLN
-    const convertedAmount = (amount * exchangeRates[currency]).toFixed(2);
+    // Przeliczanie kwoty na domyślną walutę (PLN)
+    const convertedAmount = parseFloat((amount * exchangeRates[currency]).toFixed(2));
 
-    // Tworzenie nowej transakcji
+    // Walidacja przeliczonej kwoty
+    if (isNaN(convertedAmount)) {
+        alert('Błąd przeliczania kwoty. Sprawdź walutę lub kurs wymiany.');
+        return;
+    }
+
+    // Tworzenie obiektu transakcji
     const transaction = { 
         id: Date.now().toString(), 
         description, 
-        originalAmount: amount.toFixed(2),
-        convertedAmount: parseFloat(convertedAmount), 
+        originalAmount: amount.toFixed(2), // Kwota w oryginalnej walucie
+        convertedAmount, // Kwota po przeliczeniu
         category, 
         currency 
     };
@@ -128,25 +133,18 @@ transactionForm.addEventListener('submit', (e) => {
     // Dodanie transakcji do listy
     transactions.push(transaction);
 
-    // Zapis do localStorage
+    // Zapisanie transakcji, odświeżenie interfejsu i zaktualizowanie salda
     saveTransactions();
-
-    // Odświeżenie listy transakcji
     renderTransactions();
-
-    // Aktualizacja salda i wykresu
     updateBalance();
     updateChart();
-
-    // Czyszczenie formularza
     transactionForm.reset();
 });
 
 const exchangeRates = {
     PLN: 1,
-    USD: 4.0,
-    EUR: 4.5,
-    GBP: 5.0
+    USD: 4.50,
+    EUR: 4.80
 };
 
 filterButtons.forEach(button => {
