@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budzetownik-cache-v1';
+const CACHE_NAME = 'budzetownik-cache-v2';
 
 const urlsToCache = [
   './index.html?v=1',
