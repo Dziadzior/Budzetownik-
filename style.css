@@ -153,23 +153,17 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto;
+    grid-template-columns: 40px 1fr auto; /* Trzy kolumny: ikona, szczegóły, kwota */
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
 }
 
-.transaction-icon {
-    font-size: 1.8em;
-    text-align: center;
-}
-
 .transaction-details {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    justify-content: center;
+    justify-content: center; /* Wyśrodkowanie w pionie */
 }
 
 .transaction-description {
@@ -185,9 +179,11 @@ form button:hover {
 .transaction-amount {
     font-size: 1.3em;
     font-weight: bold;
-    text-align: right;
-    white-space: nowrap;
-    align-self: center;
+    text-align: right; /* Wyrównanie tekstu do prawej */
+    align-self: center; /* Wyśrodkowanie w pionie */
+    white-space: nowrap; /* Zapobieganie łamaniu tekstu */
+    width: auto; /* Dostosowanie szerokości */
+    max-width: 100px; /* Opcjonalnie ograniczenie szerokości */
 }
 
 .transaction-amount.positive {
@@ -207,8 +203,8 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: end;
-    align-self: center;
+    justify-self: end; /* Wyrównanie do prawej w siatce */
+    align-self: center; /* Wyśrodkowanie w pionie */
     transition: background 0.3s;
 }
 
