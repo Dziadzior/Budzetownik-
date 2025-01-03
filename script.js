@@ -107,6 +107,8 @@ function updateCategorySummary() {
     }
   });
 
+  console.log('Kategorie:', categories); // Dodaj log
+
   // Wyczyść listę podsumowania
   summaryList.innerHTML = '';
 
@@ -167,15 +169,15 @@ function editTransaction(id) {
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.originalAmount;
+    document.getElementById('amount').value = transaction.amount; // Poprawka
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
     transactions = transactions.filter(t => t.id !== id);
-    saveTransactions();
     renderTransactions();
     updateBalance();
     updateChart();
+    updateCategorySummary(); // Upewnij się, że działa po edycji
 }
 
 filterButtons.forEach(button => {
@@ -186,7 +188,6 @@ filterButtons.forEach(button => {
     });
 });
 
-saveTransactions();
 renderTransactions();
 updateBalance();
 updateChart();
