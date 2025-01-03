@@ -13,12 +13,21 @@ let chart;
 function updateBalance() {
     balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
-    balanceElement.className = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero';
+
+    if (balance > 0) {
+        balanceElement.className = 'positive';
+    } else if (balance < 0) {
+        balanceElement.className = 'negative';
+    } else {
+        balanceElement.className = 'zero';
+    }
 }
 
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
-    const categoryIcon = document.querySelector(`option[value="${transaction.category}"]`)?.getAttribute("data-icon") || "❓";
+    const categoryIcon = document.querySelector(
+        `option[value="${transaction.category}"]`
+    )?.getAttribute("data-icon") || "❓";
 
     li.innerHTML = `
         <span class="transaction-icon">${categoryIcon}</span>
@@ -48,9 +57,10 @@ function saveTransactions() {
 
 function renderTransactions(filter = 'all') {
     transactionList.innerHTML = '';
-    transactions
-        .filter(transaction => filter === 'all' || (filter === 'income' && transaction.amount > 0) || (filter === 'expense' && transaction.amount < 0))
-        .forEach(addTransactionToList);
+    const filteredTransactions = transactions.filter(transaction =>
+        filter === 'all' || (filter === 'income' && transaction.amount > 0) || (filter === 'expense' && transaction.amount < 0)
+    );
+    filteredTransactions.forEach(addTransactionToList);
 }
 
 function updateChart() {
@@ -59,10 +69,10 @@ function updateChart() {
         return;
     }
 
-    const categories = transactions.reduce((acc, { amount, category }) => {
-        if (amount < 0) acc[category] = (acc[category] || 0) + Math.abs(amount);
-        return acc;
-    }, {});
+    const categories = {};
+    transactions.forEach(({ amount, category }) => {
+        if (amount < 0) categories[category] = (categories[category] || 0) + Math.abs(amount);
+    });
 
     if (chart) chart.destroy();
 
@@ -70,35 +80,31 @@ function updateChart() {
         type: 'pie',
         data: {
             labels: Object.keys(categories),
-            datasets: [{
-                label: 'Wydatki według kategorii',
-                data: Object.values(categories),
-                backgroundColor: [
-                    '#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722',
-                    '#673ab7', '#00bcd4', '#e91e63', '#3f51b5', '#9c27b0'
-                ],
-            }]
+            datasets: [
+                {
+                    label: 'Wydatki według kategorii',
+                    data: Object.values(categories),
+                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722', '#8e44ad', '#3498db', '#2ecc71'],
+                },
+            ],
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: { position: 'top' },
-                tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.raw.toFixed(2)} zł` } }
-            }
-        }
     });
 }
 
 transactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
+
     const description = document.getElementById('description').value.trim();
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
+
     if (!description || isNaN(amount)) {
         alert('Wypełnij wszystkie pola!');
         return;
     }
-    transactions.push({ id: Date.now().toString(), description, amount, category });
+
+    const transaction = { id: Date.now().toString(), description, amount, category };
+    transactions.push(transaction);
     saveTransactions();
     renderTransactions();
     updateChart();

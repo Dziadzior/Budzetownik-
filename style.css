@@ -124,7 +124,6 @@ form button:hover {
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
-    text-align: center;
     transition: background 0.3s, transform 0.2s;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
@@ -193,6 +192,7 @@ form button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 90px;
 }
 
 .transaction-amount.positive {
@@ -214,6 +214,7 @@ button.delete-btn {
     font-size: 0.9em;
     text-align: center;
     justify-self: center;
+    align-self: center;
     transition: background 0.3s;
 }
 
