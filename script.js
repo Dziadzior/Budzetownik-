@@ -98,11 +98,22 @@ transactionForm.addEventListener('submit', (e) => {
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
 
-    if (!description || isNaN(amount)) {
-        alert('Wypełnij wszystkie pola!');
+    // Walidacja danych
+    let errors = [];
+    if (!description) errors.push("Opis jest wymagany.");
+    if (isNaN(amount) || amount === 0) errors.push("Kwota musi być liczbą większą lub mniejszą od zera.");
+    if (!category) errors.push("Kategoria jest wymagana.");
+
+    // Jeśli są błędy, wyświetl komunikat i zakończ działanie
+    if (errors.length > 0) {
+        const errorContainer = document.getElementById('form-errors');
+errorContainer.innerHTML = errors.map(error => `<p>${error}</p>`).join('');
+errorContainer.style.display = 'block'; // Pokaż błędy
+setTimeout(() => errorContainer.style.display = 'none', 5000); // Ukryj po 5 sekundach
         return;
     }
 
+    // Jeśli walidacja jest poprawna, dodaj transakcję
     const transaction = { id: Date.now().toString(), description, amount, category };
     transactions.push(transaction);
     saveTransactions();

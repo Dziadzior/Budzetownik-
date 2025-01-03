@@ -216,6 +216,20 @@ button.delete-btn:hover {
     transform: translateY(-2px);
 }
 
+.error-messages {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    display: none;
+}
+.error-messages p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
 /* Responsywność */
 @media (max-width: 768px) {
     .container {
