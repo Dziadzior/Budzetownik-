@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budzetownik-cache-vr5'; // Zwiększona wersja cache
+const CACHE_NAME = 'budzetownik-cache-v5';
 const urlsToCache = [
   './',
   './index.html',
@@ -6,34 +6,30 @@ const urlsToCache = [
   './script.js',
   './manifest.json',
   './web-app-manifest-192x192.png',
-  './web-app-manifest-512x512.png'
+  './web-app-manifest-512x512.png',
+  'https://cdn.jsdelivr.net/npm/chart.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
 // Instalacja Service Worker i dodanie plików do cache
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Instalacja...');
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('[Service Worker] Dodawanie do cache:', urlsToCache);
-      return cache.addAll(urlsToCache).catch((error) => {
-        console.error('[Service Worker] Błąd przy dodawaniu do cache:', error);
-      });
+      console.log('Otwieranie cache i dodawanie plików');
+      return cache.addAll(urlsToCache);
+    }).catch((error) => {
+      console.error('Błąd podczas dodawania plików do cache:', error);
     })
   );
 });
 
 // Przechwytywanie żądań i serwowanie z cache
 self.addEventListener('fetch', (event) => {
-  console.log('[Service Worker] Przechwytywanie żądania:', event.request.url);
   event.respondWith(
     caches.match(event.request).then((response) => {
-      if (response) {
-        console.log('[Service Worker] Serwowanie z cache:', event.request.url);
-        return response;
-      }
-      console.log('[Service Worker] Pobieranie z sieci:', event.request.url);
-      return fetch(event.request).catch((error) => {
-        console.error('[Service Worker] Błąd pobierania z sieci:', error);
+      // Jeśli plik znajduje się w cache, zwróć go, w przeciwnym razie pobierz z sieci
+      return response || fetch(event.request).catch(() => {
+        console.warn('Błąd podczas pobierania zasobu:', event.request.url);
       });
     })
   );
@@ -41,14 +37,13 @@ self.addEventListener('fetch', (event) => {
 
 // Usuwanie starych wersji cache przy aktywacji nowego Service Worker
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Aktywacja...');
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (!cacheWhitelist.includes(cacheName)) {
-            console.log('[Service Worker] Usuwanie starego cache:', cacheName);
+            console.log('Usuwanie starego cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -60,33 +55,21 @@ self.addEventListener('activate', (event) => {
 // Obsługa notyfikacji push
 self.addEventListener('push', (event) => {
   if (!event.data) {
-    console.error('[Service Worker] Brak danych w powiadomieniu push.');
+    console.warn('Otrzymano pustą wiadomość push');
     return;
   }
+
   const data = event.data.json();
-  console.log('[Service Worker] Otrzymano powiadomienie push:', data);
+  console.log('Otrzymano powiadomienie push:', data);
+
   self.registration.showNotification(data.title, {
     body: data.body,
     icon: './web-app-manifest-192x192.png',
-    tag: data.tag || 'budzetownik-notification' // Dodano tag do zarządzania powiadomieniami
+    badge: './web-app-manifest-192x192.png'
   });
 });
 
-// Obsługa zamknięcia powiadomienia
-self.addEventListener('notificationclose', (event) => {
-  console.log('[Service Worker] Powiadomienie zamknięte:', event.notification.tag);
-});
-
-// Obsługa kliknięcia w powiadomienie
-self.addEventListener('notificationclick', (event) => {
-  console.log('[Service Worker] Kliknięto powiadomienie:', event.notification.tag);
-  event.notification.close(); // Zamknij powiadomienie
-  event.waitUntil(
-    clients.matchAll({ type: 'window' }).then((clientList) => {
-      if (clientList.length > 0) {
-        return clientList[0].focus();
-      }
-      return clients.openWindow('./index.html');
-    })
-  );
+// Dodanie obsługi błędów dla cache
+self.addEventListener('error', (event) => {
+  console.error('Błąd Service Worker:', event);
 });
