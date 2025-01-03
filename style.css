@@ -214,6 +214,45 @@ button.delete-btn:hover {
     background: #f00;
 }
 
+button.edit-btn {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-right: 10px;
+    transition: background 0.3s;
+}
+
+button.edit-btn:hover {
+    background: #0056b3;
+}
+
+button.delete-btn {
+    background: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.3s;
+}
+
+button.delete-btn:hover {
+    background: #a71d2a;
+}
+
+/* Układ przycisków */
+#transaction-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+}
+
 /* Eksport */
 .export-buttons {
     display: flex;
