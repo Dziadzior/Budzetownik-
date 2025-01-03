@@ -94,6 +94,29 @@ form input, form select, form button {
     color: #fff;
 }
 
+.currency-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.currency-wrapper label {
+    font-size: 1em;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+.currency-wrapper select {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    font-size: 1em;
+    background: #333;
+    color: #fff;
+    width: 100%;
+}
+
 /* Przycisk formularza */
 form button {
     background: #f00;

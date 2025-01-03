@@ -37,6 +37,7 @@ function addTransactionToList(transaction) {
         </div>
         <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
             ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
+            (${transaction.currency})
         </div>
         <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
     `;
@@ -97,24 +98,29 @@ transactionForm.addEventListener('submit', (e) => {
     const description = document.getElementById('description').value.trim();
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
+    const currency = document.getElementById('currency').value;
 
-    // Walidacja danych
     let errors = [];
     if (!description) errors.push("Opis jest wymagany.");
     if (isNaN(amount) || amount === 0) errors.push("Kwota musi być liczbą większą lub mniejszą od zera.");
     if (!category) errors.push("Kategoria jest wymagana.");
+    if (!currency) errors.push("Waluta jest wymagana.");
 
-    // Jeśli są błędy, wyświetl komunikat i zakończ działanie
     if (errors.length > 0) {
-        const errorContainer = document.getElementById('form-errors');
-errorContainer.innerHTML = errors.map(error => `<p>${error}</p>`).join('');
-errorContainer.style.display = 'block'; // Pokaż błędy
-setTimeout(() => errorContainer.style.display = 'none', 5000); // Ukryj po 5 sekundach
+        alert(errors.join('\n'));
         return;
     }
 
-    // Jeśli walidacja jest poprawna, dodaj transakcję
-    const transaction = { id: Date.now().toString(), description, amount, category };
+    // Przeliczanie kwoty na główną walutę (PLN)
+    const convertedAmount = amount * exchangeRates[currency];
+
+    const transaction = { 
+        id: Date.now().toString(), 
+        description, 
+        amount: convertedAmount, 
+        category, 
+        currency 
+    };
     transactions.push(transaction);
     saveTransactions();
     renderTransactions();
@@ -122,6 +128,13 @@ setTimeout(() => errorContainer.style.display = 'none', 5000); // Ukryj po 5 sek
     updateBalance();
     transactionForm.reset();
 });
+
+const exchangeRates = {
+    PLN: 1,
+    USD: 4.0,
+    EUR: 4.5,
+    GBP: 5.0
+};
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {

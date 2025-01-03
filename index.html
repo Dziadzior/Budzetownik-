@@ -22,11 +22,15 @@
     <div class="balance">
       <h2>Saldo: <span id="balance">0.00 zł</span></h2>
     </div>
-    <select id="currency">
-      <option value="PLN">PLN</option>
-      <option value="USD">USD</option>
-      <option value="EUR">EUR</option>
-    </select>
+    <div class="currency-wrapper">
+  <label for="currency">Waluta:</label>
+  <select id="currency">
+    <option value="PLN">PLN</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+  </select>
+</div>
     <div id="form-errors" class="error-messages"></div>
     <form id="transaction-form">
       <input type="text" id="description" placeholder="Opis" required>
