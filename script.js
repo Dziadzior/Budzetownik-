@@ -77,9 +77,9 @@ function updateChart() {
     if (chart) chart.destroy();
 
     chart = new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut', // Zmiana typu wykresu na "doughnut"
         data: {
-            labels: Object.keys(categories), // Kategorie na wykresie
+            labels: Object.keys(categories),
             datasets: [
                 {
                     label: 'Wydatki według kategorii',
@@ -88,6 +88,8 @@ function updateChart() {
                         '#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722',
                         '#9c27b0', '#3f51b5', '#e91e63', '#795548', '#607d8b'
                     ],
+                    borderWidth: 1,
+                    borderColor: '#222', // Obrys elementów wykresu
                 },
             ],
         },
@@ -95,11 +97,25 @@ function updateChart() {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'bottom',
+                    position: 'top', // Pozycja legendy
                     labels: {
-                        color: '#fff', // Kolor tekstu legendy
+                        color: '#fff',
+                        font: {
+                            size: 14, // Rozmiar tekstu legendy
+                            family: 'Arial, sans-serif',
+                        },
+                        padding: 20, // Odstęp między pozycjami legendy
                     },
                 },
+                tooltip: {
+                    backgroundColor: '#333', // Tło tooltipa
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    cornerRadius: 8,
+                },
+            },
+            layout: {
+                padding: 20, // Odstępy wokół wykresu
             },
         },
     });
