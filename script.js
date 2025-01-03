@@ -41,9 +41,9 @@ function addTransactionToList(transaction) {
             <div class="transaction-category">${transaction.category}</div>
         </div>
         <div class="transaction-amount ${transaction.convertedAmount > 0 ? 'positive' : 'negative'}">
-            ${transaction.convertedAmount > 0 ? '+' : ''}${transaction.convertedAmount} zł 
-            (${transaction.originalAmount} ${transaction.currency})
+            ${transaction.convertedAmount > 0 ? '+' : ''}${transaction.convertedAmount.toFixed(2)} zł
         </div>
+        <button class="edit-btn" onclick="editTransaction('${transaction.id}')">Edytuj</button>
         <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
     `;
     transactionList.appendChild(li);
@@ -146,6 +146,24 @@ const exchangeRates = {
     USD: 4.50,
     EUR: 4.80
 };
+
+function editTransaction(id) {
+    const transaction = transactions.find(t => t.id === id);
+    if (!transaction) return;
+
+    // Załadowanie danych transakcji do formularza
+    document.getElementById('description').value = transaction.description;
+    document.getElementById('amount').value = transaction.originalAmount;
+    document.getElementById('category').value = transaction.category;
+    document.getElementById('currency').value = transaction.currency;
+
+    // Usunięcie transakcji z listy, aby można było ją ponownie zapisać
+    transactions = transactions.filter(t => t.id !== id);
+    saveTransactions();
+    renderTransactions();
+    updateBalance();
+    updateChart();
+}
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
