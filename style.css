@@ -153,7 +153,7 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Kwota */
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -163,7 +163,7 @@ form button:hover {
 .transaction-icon {
     font-size: 1.8em;
     text-align: center;
-    align-self: center; /* Wyśrodkowanie w pionie */
+    align-self: center;
 }
 
 .transaction-details {
@@ -179,10 +179,6 @@ form button:hover {
     text-align: right;
     align-self: center;
     white-space: nowrap;
-    min-width: 80px;
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 .transaction-amount.positive {
@@ -193,6 +189,7 @@ form button:hover {
     color: #f00;
 }
 
+/* Przycisk Usuń */
 button.delete-btn {
     background: #555;
     color: #fff;
@@ -202,9 +199,9 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: end;
+    justify-self: center;
+    align-self: center;
     transition: background 0.3s;
-    width: auto; /* Dynamiczna szerokość */
 }
 
 button.delete-btn:hover {
@@ -262,7 +259,6 @@ button.delete-btn:hover {
 
     .transaction-amount {
         font-size: 1.1em;
-        max-width: 80px;
     }
 
     button.delete-btn {
