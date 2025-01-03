@@ -92,7 +92,7 @@ function updateChart() {
     });
 }
 
-ransactionForm.addEventListener('submit', (e) => {
+transactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
@@ -100,6 +100,7 @@ ransactionForm.addEventListener('submit', (e) => {
     const category = document.getElementById('category').value;
     const currency = document.getElementById('currency').value;
 
+    // Walidacja pól formularza
     let errors = [];
     if (!description) errors.push("Opis jest wymagany.");
     if (isNaN(amount) || amount === 0) errors.push("Kwota musi być liczbą większą lub mniejszą od zera.");
@@ -111,22 +112,33 @@ ransactionForm.addEventListener('submit', (e) => {
         return;
     }
 
-    // Przeliczanie kwoty na główną walutę (PLN)
+    // Przeliczanie kwoty na PLN
     const convertedAmount = (amount * exchangeRates[currency]).toFixed(2);
 
+    // Tworzenie nowej transakcji
     const transaction = { 
         id: Date.now().toString(), 
         description, 
         originalAmount: amount.toFixed(2),
-        convertedAmount, 
+        convertedAmount: parseFloat(convertedAmount), 
         category, 
         currency 
     };
+
+    // Dodanie transakcji do listy
     transactions.push(transaction);
+
+    // Zapis do localStorage
     saveTransactions();
+
+    // Odświeżenie listy transakcji
     renderTransactions();
-    updateChart();
+
+    // Aktualizacja salda i wykresu
     updateBalance();
+    updateChart();
+
+    // Czyszczenie formularza
     transactionForm.reset();
 });
 
