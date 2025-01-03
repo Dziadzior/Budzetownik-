@@ -16,17 +16,6 @@ body {
     min-height: 100vh;
 }
 
-/* Pasek tytułowy */
-#titlebar {
-    height: 50px;
-    background-color: #ff0000;
-    color: white;
-    display: flex;
-    align-items: center;
-    padding: 0 15px;
-    font-size: 18px;
-}
-
 /* Kontener */
 .container {
     background: #222;
@@ -48,7 +37,7 @@ h1 {
 .balance {
     text-align: center;
     margin: 20px 0;
-    font-size: 1.5em;
+    font-size: 1.8em;
 }
 
 /* Formularz */
@@ -138,10 +127,10 @@ form button:hover {
 #transaction-list li {
     background: #333;
     margin: 10px 0;
-    padding: 15px 20px;
+    padding: 15px 10px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Trzy kolumny: ikona, szczegóły, przycisk */
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -156,8 +145,7 @@ form button:hover {
 .transaction-details {
     display: flex;
     flex-direction: column;
-    flex: 1;
-    justify-content: center; /* Centrowanie w pionie */
+    justify-content: center;
 }
 
 .transaction-description {
@@ -175,7 +163,7 @@ form button:hover {
     font-weight: bold;
     text-align: right;
     white-space: nowrap;
-    align-self: center; /* Centrowanie w pionie */
+    align-self: center;
 }
 
 .transaction-amount.positive {
@@ -191,14 +179,11 @@ button.delete-btn {
     color: #fff;
     border: none;
     border-radius: 5px;
-    padding: 8px 12px;
+    padding: 8px;
     cursor: pointer;
     font-size: 0.9em;
-    text-align: center;
-    justify-self: end; /* Wyrównanie przycisku do prawej */
-    align-self: center; /* Centrowanie w pionie */
-    width: 100%;
-    max-width: 70px; /* Ograniczenie szerokości przycisku */
+    justify-self: end;
+    align-self: center;
     transition: background 0.3s;
 }
 
@@ -238,21 +223,12 @@ button.delete-btn:hover {
         padding: 1rem;
     }
 
-    h1 {
-        font-size: 1.8em;
-    }
-
     .filters button {
         font-size: 0.9em;
     }
 
     #transaction-list li {
-        grid-template-columns: 30px 1fr 50px;
-        padding: 10px 15px;
-    }
-
-    .transaction-description {
-        font-size: 1em;
+        grid-template-columns: 30px 1fr 40px;
     }
 
     .transaction-amount {
@@ -261,6 +237,5 @@ button.delete-btn:hover {
 
     button.delete-btn {
         max-width: 40px;
-        padding: 8px;
     }
 }
