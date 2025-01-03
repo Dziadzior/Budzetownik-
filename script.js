@@ -3,7 +3,8 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const exportCsvButton = document.getElementById('export-csv');
 const exportExcelButton = document.getElementById('export-excel');
-const ctx = document.getElementById('expense-chart')?.getContext('2d');
+const canvasElement = document.getElementById('expense-chart');
+const ctx = canvasElement ? canvasElement.getContext('2d') : null;
 const filterButtons = document.querySelectorAll('.filter');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -77,19 +78,16 @@ function updateChart() {
     if (chart) chart.destroy();
 
     chart = new Chart(ctx, {
-        type: 'doughnut', // Zmiana typu wykresu na "doughnut"
+        type: 'pie',
         data: {
             labels: Object.keys(categories),
             datasets: [
                 {
                     label: 'Wydatki według kategorii',
                     data: Object.values(categories),
-                    backgroundColor: [
-                        '#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722',
-                        '#9c27b0', '#3f51b5', '#e91e63', '#795548', '#607d8b'
-                    ],
+                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
+                    borderColor: '#111',
                     borderWidth: 1,
-                    borderColor: '#222', // Obrys elementów wykresu
                 },
             ],
         },
@@ -97,25 +95,18 @@ function updateChart() {
             responsive: true,
             plugins: {
                 legend: {
-                    position: 'top', // Pozycja legendy
+                    position: 'bottom',
                     labels: {
                         color: '#fff',
-                        font: {
-                            size: 14, // Rozmiar tekstu legendy
-                            family: 'Arial, sans-serif',
-                        },
-                        padding: 20, // Odstęp między pozycjami legendy
                     },
                 },
                 tooltip: {
-                    backgroundColor: '#333', // Tło tooltipa
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    cornerRadius: 8,
+                    callbacks: {
+                        label: (tooltipItem) => {
+                            return `${tooltipItem.label}: ${tooltipItem.raw.toFixed(2)} zł`;
+                        },
+                    },
                 },
-            },
-            layout: {
-                padding: 20, // Odstępy wokół wykresu
             },
         },
     });
