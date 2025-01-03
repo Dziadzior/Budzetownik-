@@ -153,30 +153,11 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Kwota/Usuń */
+    grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
-}
-
-/* Kwota transakcji */
-.transaction-amount {
-    font-size: 1.2em;
-    font-weight: bold;
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    align-self: center;
-}
-
-.transaction-amount.positive {
-    color: #0f0;
-}
-
-.transaction-amount.negative {
-    color: #f00;
 }
 
 /* Ikona transakcji */
@@ -191,13 +172,11 @@ form button:hover {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    flex: 1;
 }
 
 .transaction-description {
     font-size: 1em;
     font-weight: bold;
-    margin-bottom: 2px;
 }
 
 .transaction-category {
@@ -206,20 +185,35 @@ form button:hover {
     font-style: italic;
 }
 
+/* Kwota transakcji */
+.transaction-amount {
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.transaction-amount.positive {
+    color: #0f0;
+}
+
+.transaction-amount.negative {
+    color: #f00;
+}
+
 /* Przycisk Usuń */
 button.delete-btn {
     background: #555;
     color: #fff;
     border: none;
     border-radius: 5px;
-    padding: 8px;
+    padding: 8px 12px;
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
     justify-self: center;
     align-self: center;
     transition: background 0.3s;
-    height: 40px; /* Stała wysokość dla wyśrodkowania */
 }
 
 button.delete-btn:hover {
@@ -267,7 +261,7 @@ button.delete-btn:hover {
     }
 
     #transaction-list li {
-        grid-template-columns: 30px 1fr 60px;
+        grid-template-columns: 30px 1fr 70px;
         padding: 10px 15px;
     }
 
@@ -276,11 +270,11 @@ button.delete-btn:hover {
     }
 
     .transaction-amount {
-        font-size: 1em;
+        font-size: 1.1em;
     }
 
     button.delete-btn {
-        max-width: 60px;
+        max-width: 50px;
         padding: 8px;
     }
 }
