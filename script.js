@@ -3,8 +3,7 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const exportCsvButton = document.getElementById('export-csv');
 const exportExcelButton = document.getElementById('export-excel');
-const canvasElement = document.getElementById('expense-chart');
-const ctx = canvasElement ? canvasElement.getContext('2d') : null;
+const ctx = document.getElementById('expense-chart')?.getContext('2d');
 const filterButtons = document.querySelectorAll('.filter');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -86,7 +85,6 @@ function updateChart() {
                     label: 'Wydatki według kategorii',
                     data: Object.values(categories),
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
-                    borderColor: '#111',
                     borderWidth: 1,
                 },
             ],
@@ -96,16 +94,6 @@ function updateChart() {
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: {
-                        color: '#fff',
-                    },
-                },
-                tooltip: {
-                    callbacks: {
-                        label: (tooltipItem) => {
-                            return `${tooltipItem.label}: ${tooltipItem.raw.toFixed(2)} zł`;
-                        },
-                    },
                 },
             },
         },
