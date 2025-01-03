@@ -111,33 +111,36 @@ filterButtons.forEach(button => {
 });
 
 function exportToCSV() {
-  const data = [
-    ['Kategoria', 'Opis', 'Kwota'],
-    ['Wydatki', 'Rachunek za prąd', '-100'],
-    ['Przychody', 'Pensja', '+3000']
-  ];
+    const data = [['Kategoria', 'Opis', 'Kwota']];
+    transactions.forEach(({ category, description, amount }) => {
+        data.push([category, description, `${amount > 0 ? '+' : ''}${amount.toFixed(2)}`]);
+    });
 
-  const csvContent = data.map(row => row.join(',')).join('\n');
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.setAttribute('download', 'data.csv');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+    const csvContent = data.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.setAttribute('download', 'transactions.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 function exportToExcel() {
-  const data = [
-    { Kategoria: 'Wydatki', Opis: 'Rachunek za prąd', Kwota: '-100' },
-    { Kategoria: 'Przychody', Opis: 'Pensja', Kwota: '+3000' }
-  ];
+    const data = transactions.map(({ category, description, amount }) => ({
+        Kategoria: category,
+        Opis: description,
+        Kwota: `${amount > 0 ? '+' : ''}${amount.toFixed(2)}`
+    }));
 
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-  XLSX.writeFile(workbook, 'data.xlsx');
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
+    XLSX.writeFile(workbook, 'transactions.xlsx');
 }
+
+exportCsvButton.addEventListener('click', exportToCSV);
+exportExcelButton.addEventListener('click', exportToExcel);
 
 renderTransactions();
 updateChart();

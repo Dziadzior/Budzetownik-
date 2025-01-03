@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rozbudowany Budżetownik</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#f00">
-    
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rozbudowany Budżetownik</title>
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f00">
 </head>
 <body>
-    <div class="container">
-        <h1>Budżetownik</h1>
-        <div class="balance">
-            <h2>Saldo: <span id="balance">0.00 zł</span></h2>
-        </div>
-        <form id="transaction-form">
-            <input type="text" id="description" placeholder="Opis" required>
-            <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required>
-            <div class="category-wrapper">
-                <label for="category">Kategoria:</label>
-                <select id="category" required>
-                    <optgroup label="Dom">
-                        <option value="Wynajem" data-icon="🏠">Wynajem</option>
-                        <option value="Umeblowanie" data-icon="🛋️">Umeblowanie</option>
-                        <option value="Naprawy" data-icon="🔧">Naprawy</option>
-                    </optgroup>
-                    <optgroup label="Jedzenie">
-                        <option value="Restauracje" data-icon="🍴">Restauracje</option>
-                        <option value="Zakupy spożywcze" data-icon="🛒">Zakupy spożywcze</option>
-                    </optgroup>
-                    <optgroup label="Rachunki">
-                        <option value="Prąd" data-icon="⚡">Prąd</option>
-                        <option value="Woda" data-icon="💧">Woda</option>
-                        <option value="Gaz" data-icon="🔥">Gaz</option>
-                        <option value="Internet" data-icon="🌐">Internet</option>
-                        <option value="Telefon" data-icon="📱">Telefon</option>
-                        <option value="Rata" data-icon="💳">Rata</option>
-                    </optgroup>
-                    <optgroup label="Rozrywka">
-                        <option value="Kino/Teatr" data-icon="🎭">Kino/Teatr</option>
-                        <option value="Subskrypcje" data-icon="📺">Subskrypcje</option>
-                        <option value="Gry komputerowe" data-icon="🎮">Gry komputerowe</option>
-                    </optgroup>
-                    <optgroup label="Przychody">
-                        <option value="Pensja" data-icon="💰">Pensja</option>
-                        <option value="Dodatkowa praca" data-icon="🛠️">Dodatkowa praca</option>
-                        <option value="Prezenty" data-icon="🎁">Prezenty</option>
-                    </optgroup>
-                </select>
-            </div>
-            <button type="submit">Dodaj</button>
-        </form>
-        <div class="filters">
-            <button data-filter="all" class="filter active">Wszystkie</button>
-            <button data-filter="income" class="filter">Przychody</button>
-            <button data-filter="expense" class="filter">Wydatki</button>
-        </div>
-        <ul id="transaction-list"></ul>
-        <div class="export-buttons">
-            <button id="export-csv">Eksportuj do CSV</button>
-            <button id="export-excel">Eksportuj do Excel</button>
-        </div>
-        <canvas id="expense-chart" width="400" height="200"></canvas>
+  <div class="container">
+    <h1>Budżetownik</h1>
+    <div class="balance">
+      <h2>Saldo: <span id="balance">0.00 zł</span></h2>
     </div>
-    <script src="script.js"></script>
-     <script>
+    <form id="transaction-form">
+      <input type="text" id="description" placeholder="Opis" required>
+      <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required>
+      <div class="category-wrapper">
+        <label for="category">Kategoria:</label>
+        <select id="category" required>
+          <optgroup label="Dom">
+            <option value="Wynajem" data-icon="🏠">Wynajem</option>
+            <option value="Umeblowanie" data-icon="🛋️">Umeblowanie</option>
+            <option value="Naprawy" data-icon="🔧">Naprawy</option>
+          </optgroup>
+          <optgroup label="Jedzenie">
+            <option value="Restauracje" data-icon="🍴">Restauracje</option>
+            <option value="Zakupy spożywcze" data-icon="🛒">Zakupy spożywcze</option>
+          </optgroup>
+          <optgroup label="Rachunki">
+            <option value="Prąd" data-icon="⚡">Prąd</option>
+            <option value="Woda" data-icon="💧">Woda</option>
+            <option value="Gaz" data-icon="🔥">Gaz</option>
+            <option value="Internet" data-icon="🌐">Internet</option>
+            <option value="Telefon" data-icon="📱">Telefon</option>
+            <option value="Rata" data-icon="💳">Rata</option>
+          </optgroup>
+          <optgroup label="Rozrywka">
+            <option value="Kino/Teatr" data-icon="🎭">Kino/Teatr</option>
+            <option value="Subskrypcje" data-icon="📺">Subskrypcje</option>
+            <option value="Gry komputerowe" data-icon="🎮">Gry komputerowe</option>
+          </optgroup>
+          <optgroup label="Przychody">
+            <option value="Pensja" data-icon="💰">Pensja</option>
+            <option value="Dodatkowa praca" data-icon="🛠️">Dodatkowa praca</option>
+            <option value="Prezenty" data-icon="🎁">Prezenty</option>
+          </optgroup>
+        </select>
+      </div>
+      <button type="submit">Dodaj</button>
+    </form>
+    <div class="filters">
+      <button data-filter="all" class="filter active">Wszystkie</button>
+      <button data-filter="income" class="filter">Przychody</button>
+      <button data-filter="expense" class="filter">Wydatki</button>
+    </div>
+    <ul id="transaction-list"></ul>
+    <div class="export-buttons">
+      <button id="export-csv">Eksportuj do CSV</button>
+      <button id="export-excel">Eksportuj do Excel</button>
+    </div>
+    <canvas id="expense-chart" width="400" height="200"></canvas>
+  </div>
+  <script src="script.js"></script>
+  <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./service-worker.js')
         .then((registration) => {

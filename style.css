@@ -1,74 +1,46 @@
+/* Reset domyślnych stylów */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Główne ustawienia */
 body {
     font-family: Arial, sans-serif;
     background: #111;
     color: #fff;
-    margin: 0;
-    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
 }
 
-#titlebar {
-  height: 50px;
-  background-color: #ff0000;
-  color: white;
-  display: flex;
-  align-items: center;
-  padding: 0 15px;
-  font-size: 18px;
-}
-
-#categories {
-  margin: 20px;
-}
-
-#categories label {
-  font-size: 16px;
-}
-
-#categories select {
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-}
-
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  background-color: #ff0000;
-  color: white;
-  border: none;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #cc0000;
-}
-
+/* Kontener */
 .container {
     background: #222;
-    padding: 20px;
+    padding: 1rem;
     border-radius: 10px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    width: 400px;
-    max-width: 90%;
+    width: 90%;
+    max-width: 400px;
 }
 
+/* Tytuł */
 h1 {
     text-align: center;
     color: #f00;
     margin-bottom: 10px;
 }
 
+/* Saldo */
 .balance {
     text-align: center;
     margin: 20px 0;
     font-size: 1.5em;
 }
 
+/* Formularz */
 form {
     display: flex;
     flex-direction: column;
@@ -85,6 +57,7 @@ form input, form select, form button {
     width: 100%;
 }
 
+/* Kategorie */
 .category-wrapper {
     width: 100%;
     display: flex;
@@ -98,6 +71,7 @@ form input, form select, form button {
     color: #fff;
 }
 
+/* Przycisk formularza */
 form button {
     background: #f00;
     border: none;
@@ -109,6 +83,7 @@ form button:hover {
     background: #c00;
 }
 
+/* Filtry */
 .filters {
     display: flex;
     justify-content: space-between;
@@ -141,6 +116,7 @@ form button:hover {
     transform: translateY(-2px);
 }
 
+/* Lista transakcji */
 #transaction-list {
     list-style: none;
     padding: 0;
@@ -205,14 +181,15 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     transition: background 0.3s;
-    align-self: center; /* Wyśrodkowanie przycisku */
-    justify-self: center; /* Wyśrodkowanie w grid */
+    align-self: center;
+    justify-self: center;
 }
 
 button.delete-btn:hover {
     background: #f00;
 }
 
+/* Eksport */
 .export-buttons {
     display: flex;
     gap: 10px;
@@ -235,4 +212,33 @@ button.delete-btn:hover {
 .export-buttons button:hover {
     background: #666;
     transform: translateY(-2px);
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .container {
+        max-width: 95%;
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.8em;
+    }
+
+    .filters button {
+        font-size: 0.9em;
+    }
+
+    #transaction-list li {
+        grid-template-columns: 30px 1fr auto;
+        padding: 10px 15px;
+    }
+
+    .transaction-description {
+        font-size: 1em;
+    }
+
+    .transaction-amount {
+        font-size: 1.1em;
+    }
 }
