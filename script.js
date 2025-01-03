@@ -71,7 +71,7 @@ function updateChart() {
 
     const categories = {};
     transactions.forEach(({ amount, category }) => {
-        if (amount < 0) categories[category] = (categories[category] || 0) + Math.abs(amount);
+        categories[category] = (categories[category] || 0) + Math.abs(amount);
     });
 
     if (chart) chart.destroy();
@@ -87,6 +87,14 @@ function updateChart() {
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722', '#8e44ad', '#3498db', '#2ecc71'],
                 },
             ],
+        },
+        options: {
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                },
+            },
         },
     });
 }
