@@ -10,14 +10,16 @@ let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let balance = 0;
 let chart;
 
+// Funkcja aktualizująca saldo
 function updateBalance() {
-    // Użycie metody reduce, upewniając się, że każda kwota jest liczbą
     balance = transactions.reduce((total, transaction) => {
-        const amount = parseFloat(transaction.convertedAmount) || 0;
-        return total + amount;
+        if (transaction.currency === "PLN") {
+            return total + transaction.amount;
+        }
+        return total; // Można dodać konwersję walut w przyszłości
     }, 0);
 
-    balanceElement.textContent = `${balance.toFixed(2)} zł`;
+    balanceElement.textContent = `${balance.toFixed(2)} zł`; // Zaktualizowane saldo w PLN
 
     if (balance > 0) {
         balanceElement.className = 'positive';
@@ -59,15 +61,22 @@ function removeTransaction(id) {
     updateBalance();
 }
 
+// Funkcja zapisująca transakcje
 function saveTransactions() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem('transactions', JSON.stringify(transactions)); // Zapisujemy do localStorage
 }
 
 function renderTransactions(filter = 'all') {
-    transactionList.innerHTML = '';
+    transactionList.innerHTML = ''; // Wyczyszczenie listy transakcji
+
+    // Filtrowanie transakcji na podstawie wybranego kryterium
     const filteredTransactions = transactions.filter(transaction =>
-        filter === 'all' || (filter === 'income' && transaction.amount > 0) || (filter === 'expense' && transaction.amount < 0)
+        filter === 'all' || 
+        (filter === 'income' && transaction.amount > 0) || 
+        (filter === 'expense' && transaction.amount < 0)
     );
+
+    // Dodanie przefiltrowanych transakcji do listy
     filteredTransactions.forEach(addTransactionToList);
 }
 
@@ -107,39 +116,25 @@ transactionForm.addEventListener('submit', (e) => {
     const category = document.getElementById('category').value;
     const currency = document.getElementById('currency').value;
 
-    // Walidacja pól formularza
-    if (!description || isNaN(amount) || !category || !currency) {
-        alert('Wypełnij poprawnie wszystkie pola!');
+    if (!description || isNaN(amount)) {
+        alert('Wypełnij wszystkie pola!');
         return;
     }
 
-    // Przeliczanie kwoty na domyślną walutę (PLN)
-    const convertedAmount = parseFloat((amount * exchangeRates[currency]).toFixed(2));
-
-    // Walidacja przeliczonej kwoty
-    if (isNaN(convertedAmount)) {
-        alert('Błąd przeliczania kwoty. Sprawdź walutę lub kurs wymiany.');
-        return;
-    }
-
-    // Tworzenie obiektu transakcji
-    const transaction = { 
-        id: Date.now().toString(), 
-        description, 
-        originalAmount: amount.toFixed(2), // Kwota w oryginalnej walucie
-        convertedAmount, // Kwota po przeliczeniu
-        category, 
-        currency 
+    const transaction = {
+        id: Date.now().toString(),
+        description,
+        amount,
+        category,
+        currency,
+        convertedAmount: convertToPLN(amount, currency)
     };
 
-    // Dodanie transakcji do listy
     transactions.push(transaction);
-
-    // Zapisanie transakcji, odświeżenie interfejsu i zaktualizowanie salda
     saveTransactions();
     renderTransactions();
-    updateBalance();
     updateChart();
+    updateBalance();
     transactionForm.reset();
 });
 
@@ -169,9 +164,9 @@ function editTransaction(id) {
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        renderTransactions(button.dataset.filter);
+        filterButtons.forEach(btn => btn.classList.remove('active')); // Usuń aktywną klasę z innych przycisków
+        button.classList.add('active'); // Dodaj aktywną klasę do klikniętego przycisku
+        renderTransactions(button.dataset.filter); // Wywołaj renderowanie z odpowiednim filtrem
     });
 });
 
