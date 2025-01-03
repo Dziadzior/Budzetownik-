@@ -147,46 +147,36 @@ form button:hover {
     margin: 20px 0;
 }
 
+/* Lista transakcji */
 #transaction-list li {
     background: #333;
     margin: 10px 0;
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto;
+    grid-template-columns: 40px 1fr auto 70px; /* Ikona, Szczegóły, Kwota, Przycisk */
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
 }
 
-.transaction-icon {
-    font-size: 1.8em;
-    text-align: center;
-    align-self: center;
-}
-
-.transaction-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
-}
-
+/* Kwota transakcji */
 .transaction-amount {
     font-size: 1.3em;
     font-weight: bold;
     text-align: right;
     align-self: center;
     white-space: nowrap;
+    overflow: visible; /* Zapewnia widoczność całej kwoty */
 }
 
-.transaction-amount.positive {
-    color: #0f0;
+/.transaction-amount.positive {
+    color: #0f0; /* Zielony dla przychodów */
 }
 
 .transaction-amount.negative {
-    color: #f00;
+    color: #f00; /* Czerwony dla wydatków */
 }
 
 /* Przycisk Usuń */
@@ -199,8 +189,10 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center;
-    align-self: center;
+    justify-self: center; /* Centrowanie w siatce */
+    align-self: center; /* Wyśrodkowanie w pionie */
+    width: 100%; /* Dopasowanie szerokości */
+    max-width: 60px;
     transition: background 0.3s;
 }
 
