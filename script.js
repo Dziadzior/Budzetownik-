@@ -71,7 +71,7 @@ function updateChart() {
 
     const categories = {};
     transactions.forEach(({ amount, category }) => {
-        categories[category] = (categories[category] || 0) + Math.abs(amount);
+        if (amount < 0) categories[category] = (categories[category] || 0) + Math.abs(amount);
     });
 
     if (chart) chart.destroy();
@@ -79,20 +79,26 @@ function updateChart() {
     chart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: Object.keys(categories),
+            labels: Object.keys(categories), // Kategorie na wykresie
             datasets: [
                 {
                     label: 'Wydatki według kategorii',
                     data: Object.values(categories),
-                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722', '#8e44ad', '#3498db', '#2ecc71'],
+                    backgroundColor: [
+                        '#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722',
+                        '#9c27b0', '#3f51b5', '#e91e63', '#795548', '#607d8b'
+                    ],
                 },
             ],
         },
         options: {
+            responsive: true,
             plugins: {
                 legend: {
-                    display: true,
                     position: 'bottom',
+                    labels: {
+                        color: '#fff', // Kolor tekstu legendy
+                    },
                 },
             },
         },
