@@ -17,7 +17,6 @@ function updateBalance() {
 
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    // Aktualizacja klasy w zależności od wartości salda
     if (balance > 0) {
         balanceElement.className = 'positive';
     } else if (balance < 0) {
@@ -25,10 +24,14 @@ function updateBalance() {
     } else {
         balanceElement.className = 'zero';
     }
+
+    console.log("Saldo zaktualizowane:", balance);
 }
 
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
+    li.classList.add('transaction-item');
+
     const categoryIcon = document.querySelector(
         `option[value="${transaction.category}"]`
     )?.getAttribute("data-icon") || "❓";
@@ -47,6 +50,7 @@ function addTransactionToList(transaction) {
             <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
         </div>
     `;
+
     transactionList.appendChild(li);
 }
 
@@ -64,16 +68,13 @@ function saveTransactions() {
 }
 
 function renderTransactions(filter = 'all') {
-    transactionList.innerHTML = ''; // Wyczyszczenie listy transakcji
-
-    // Filtrowanie transakcji na podstawie wybranego kryterium
+    transactionList.innerHTML = '';
     const filteredTransactions = transactions.filter(transaction =>
         filter === 'all' || 
         (filter === 'income' && transaction.amount > 0) || 
         (filter === 'expense' && transaction.amount < 0)
     );
 
-    // Dodanie przefiltrowanych transakcji do listy
     filteredTransactions.forEach(addTransactionToList);
 }
 
@@ -142,10 +143,15 @@ transactionForm.addEventListener('submit', (e) => {
 
 function convertCurrency(amount, currency) {
     const exchangeRates = {
-        PLN: 1, // Podstawowa waluta
-        USD: 4.5, // Przykładowy kurs
+        PLN: 1,
+        USD: 4.5,
         EUR: 4.8,
     };
+
+    if (!exchangeRates[currency]) {
+        console.error(`Nieznana waluta: ${currency}`);
+        return 0;
+    }
 
     return amount * exchangeRates[currency];
 }
@@ -154,13 +160,11 @@ function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
     if (!transaction) return;
 
-    // Załadowanie danych transakcji do formularza
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.originalAmount;
+    document.getElementById('amount').value = transaction.amount; // Może być potrzebna odwrotna konwersja waluty
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
-    // Usunięcie transakcji z listy, aby można było ją ponownie zapisać
     transactions = transactions.filter(t => t.id !== id);
     saveTransactions();
     renderTransactions();
