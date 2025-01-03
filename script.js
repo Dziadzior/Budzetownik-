@@ -1,5 +1,5 @@
 const balanceElement = document.getElementById('balance');
-const transactionForm = document.getElementById('transaction-form');
+const transactionForm = document.getElementById('transaction-form'); // Usunięcie dodatkowej deklaracji
 const transactionList = document.getElementById('transaction-list');
 const exportCsvButton = document.getElementById('export-csv');
 const exportExcelButton = document.getElementById('export-excel');
@@ -10,11 +10,8 @@ let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let balance = 0;
 let chart;
 
-// Funkcja aktualizująca saldo
 function updateBalance() {
-    const balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
-    const balanceElement = document.getElementById('balance');
-
+    balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
     if (balance > 0) {
@@ -24,14 +21,10 @@ function updateBalance() {
     } else {
         balanceElement.className = 'zero';
     }
-
-    console.log("Saldo zaktualizowane:", balance);
 }
 
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
-    li.classList.add('transaction-item');
-
     const categoryIcon = document.querySelector(
         `option[value="${transaction.category}"]`
     )?.getAttribute("data-icon") || "❓";
@@ -50,7 +43,6 @@ function addTransactionToList(transaction) {
             <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
         </div>
     `;
-
     transactionList.appendChild(li);
 }
 
@@ -62,7 +54,6 @@ function removeTransaction(id) {
     updateBalance();
 }
 
-// Funkcja zapisująca transakcje
 function saveTransactions() {
     localStorage.setItem('transactions', JSON.stringify(transactions));
 }
@@ -74,7 +65,6 @@ function renderTransactions(filter = 'all') {
         (filter === 'income' && transaction.amount > 0) || 
         (filter === 'expense' && transaction.amount < 0)
     );
-
     filteredTransactions.forEach(addTransactionToList);
 }
 
@@ -106,39 +96,35 @@ function updateChart() {
     });
 }
 
-const transactionForm = document.getElementById('transaction-form');
 transactionForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // Zapobiega przeładowaniu strony
+    e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
     const currency = document.getElementById('currency').value;
 
-    // Walidacja pól formularza
     if (!description || isNaN(amount) || !category || !currency) {
         alert('Wypełnij wszystkie pola!');
         return;
     }
 
-    // Przeliczanie waluty (jeśli istnieje funkcja konwertująca)
     const convertedAmount = convertCurrency(amount, currency);
 
-    // Dodawanie nowej transakcji
     const transaction = {
-        id: Date.now().toString(), // Unikalne ID transakcji
+        id: Date.now().toString(),
         description,
         amount: convertedAmount,
         category,
         currency,
     };
 
-    transactions.push(transaction); // Dodanie transakcji do listy
-    saveTransactions(); // Zapisanie do Local Storage
-    renderTransactions(); // Odświeżenie listy
-    updateBalance(); // Zaktualizowanie salda
-    updateChart(); // Zaktualizowanie wykresu
-    transactionForm.reset(); // Wyczyść formularz
+    transactions.push(transaction);
+    saveTransactions();
+    renderTransactions();
+    updateBalance();
+    updateChart();
+    transactionForm.reset();
 });
 
 function convertCurrency(amount, currency) {
@@ -148,11 +134,6 @@ function convertCurrency(amount, currency) {
         EUR: 4.8,
     };
 
-    if (!exchangeRates[currency]) {
-        console.error(`Nieznana waluta: ${currency}`);
-        return 0;
-    }
-
     return amount * exchangeRates[currency];
 }
 
@@ -161,7 +142,7 @@ function editTransaction(id) {
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.amount; // Może być potrzebna odwrotna konwersja waluty
+    document.getElementById('amount').value = transaction.originalAmount;
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
@@ -174,9 +155,9 @@ function editTransaction(id) {
 
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active')); // Usuń aktywną klasę z innych przycisków
-        button.classList.add('active'); // Dodaj aktywną klasę do klikniętego przycisku
-        renderTransactions(button.dataset.filter); // Wywołaj renderowanie z odpowiednim filtrem
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        renderTransactions(button.dataset.filter);
     });
 });
 
