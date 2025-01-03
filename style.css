@@ -43,26 +43,6 @@ h1 {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.balance span {
-    display: inline-block;
-    padding: 10px 20px;
-    border-radius: 10px;
-    background: #222;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-#balance.positive {
-    color: #0f0;
-}
-
-#balance.negative {
-    color: #f00;
-}
-
-#balance.zero {
-    color: #fff;
-}
-
 /* Formularz */
 form {
     display: flex;
@@ -88,12 +68,6 @@ form input, form select, form button {
     align-items: center;
 }
 
-.category-wrapper label {
-    font-size: 1em;
-    margin-bottom: 5px;
-    color: #fff;
-}
-
 /* Przycisk formularza */
 form button {
     background: #f00;
@@ -104,40 +78,6 @@ form button {
 
 form button:hover {
     background: #c00;
-}
-
-/* Filtry */
-.filters {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    margin: 20px 0;
-}
-
-.filters button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: #444;
-    color: #fff;
-    font-size: 1em;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    transition: background 0.3s, transform 0.2s;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-}
-
-.filters button.active {
-    background: #f00;
-    color: #fff;
-    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.4);
-}
-
-.filters button:hover {
-    background: #666;
-    transform: translateY(-2px);
 }
 
 /* Lista transakcji */
@@ -160,29 +100,6 @@ form button:hover {
     color: #fff;
 }
 
-/* Szczegóły transakcji */
-.transaction-icon {
-    font-size: 1.8em;
-    text-align: center;
-}
-
-.transaction-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.transaction-description {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.transaction-category {
-    font-size: 0.9em;
-    color: #aaa;
-    font-style: italic;
-}
-
 /* Kwota transakcji */
 .transaction-amount {
     font-size: 1.3em;
@@ -191,7 +108,6 @@ form button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100%;
 }
 
 .transaction-amount.positive {
@@ -212,68 +128,10 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
+    justify-self: center;
     transition: background 0.3s;
 }
 
 button.delete-btn:hover {
     background: #f00;
-}
-
-/* Eksport */
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-}
-
-.export-buttons button {
-    flex: 1;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    background: #444;
-    color: #fff;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
-}
-
-.export-buttons button:hover {
-    background: #666;
-    transform: translateY(-2px);
-}
-
-/* Responsywność */
-@media (max-width: 768px) {
-    .container {
-        max-width: 95%;
-        padding: 1rem;
-    }
-
-    h1 {
-        font-size: 1.8em;
-    }
-
-    .filters button {
-        font-size: 0.9em;
-    }
-
-    #transaction-list li {
-        grid-template-columns: 30px 1fr auto;
-        padding: 10px 15px;
-    }
-
-    .transaction-description {
-        font-size: 1em;
-    }
-
-    .transaction-amount {
-        font-size: 1.1em;
-    }
-
-    button.delete-btn {
-        max-width: 40px;
-        padding: 8px;
-    }
 }

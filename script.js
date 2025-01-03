@@ -1,134 +1,58 @@
 const balanceElement = document.getElementById('balance');
 const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
-const exportCsvButton = document.getElementById('export-csv');
-const exportExcelButton = document.getElementById('export-excel');
 const ctx = document.getElementById('expense-chart')?.getContext('2d');
-const filterButtons = document.querySelectorAll('.filter');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
-let balance = 0;
 let chart;
 
 function updateBalance() {
-    balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
+    const balance = transactions.reduce((total, t) => total + t.amount, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
-
-    if (balance > 0) {
-        balanceElement.className = 'positive';
-    } else if (balance < 0) {
-        balanceElement.className = 'negative';
-    } else {
-        balanceElement.className = 'zero';
-    }
 }
 
-function addTransactionToList(transaction) {
-    const li = document.createElement('li');
-    const categoryIcon = document.querySelector(
-        `option[value="${transaction.category}"]`
-    )?.getAttribute("data-icon") || "❓";
-
-    li.innerHTML = `
-        <span class="transaction-icon">${categoryIcon}</span>
-        <div class="transaction-details">
-            <div class="transaction-description">${transaction.description}</div>
-            <div class="transaction-category">${transaction.category}</div>
-        </div>
-        <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
-            ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
-        </div>
-        <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
-    `;
-    transactionList.appendChild(li);
-}
-
-function removeTransaction(id) {
-    transactions = transactions.filter(transaction => transaction.id !== id);
-    saveTransactions();
-    renderTransactions();
-    updateChart();
-    updateBalance();
-}
-
-function saveTransactions() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-}
-
-function renderTransactions(filter = 'all') {
+function renderTransactions() {
     transactionList.innerHTML = '';
-    const filteredTransactions = transactions.filter(transaction =>
-        filter === 'all' || (filter === 'income' && transaction.amount > 0) || (filter === 'expense' && transaction.amount < 0)
-    );
-    filteredTransactions.forEach(addTransactionToList);
+    transactions.forEach((transaction) => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
+                ${transaction.amount.toFixed(2)} zł
+            </span>
+        `;
+        transactionList.appendChild(li);
+    });
 }
 
 function updateChart() {
-    if (!ctx || typeof Chart === 'undefined') {
-        console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
-        return;
-    }
-
-    const categories = {};
-    transactions.forEach(({ amount, category }) => {
-        if (amount < 0) categories[category] = (categories[category] || 0) + Math.abs(amount);
-    });
+    const categories = transactions.reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + t.amount;
+        return acc;
+    }, {});
+    const labels = Object.keys(categories);
+    const data = Object.values(categories);
 
     if (chart) chart.destroy();
 
     chart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: Object.keys(categories),
-            datasets: [
-                {
-                    label: 'Wydatki według kategorii',
-                    data: Object.values(categories),
-                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
-                    borderWidth: 1,
-                },
-            ],
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                },
-            },
+            labels,
+            datasets: [{ data }],
         },
     });
 }
 
 transactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
-
-    const description = document.getElementById('description').value.trim();
+    const description = document.getElementById('description').value;
     const amount = parseFloat(document.getElementById('amount').value);
-    const category = document.getElementById('category').value;
-
-    if (!description || isNaN(amount)) {
-        alert('Wypełnij wszystkie pola!');
-        return;
-    }
-
-    const transaction = { id: Date.now().toString(), description, amount, category };
-    transactions.push(transaction);
-    saveTransactions();
+    transactions.push({ description, amount });
+    updateBalance();
     renderTransactions();
     updateChart();
-    updateBalance();
-    transactionForm.reset();
 });
 
-filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        renderTransactions(button.dataset.filter);
-    });
-});
-
+updateBalance();
 renderTransactions();
 updateChart();
-updateBalance();
