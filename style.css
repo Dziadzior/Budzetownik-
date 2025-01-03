@@ -153,8 +153,8 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto 70px; /* Ikona, Szczegóły, Kwota, Przycisk */
-    align-items: center;
+    grid-template-columns: 40px 1fr auto 60px; /* Ikona, Szczegóły, Kwota, Przycisk */
+    align-items: center; /* Centruje elementy w pionie */
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
     color: #fff;
@@ -165,17 +165,17 @@ form button:hover {
     font-size: 1.3em;
     font-weight: bold;
     text-align: right;
-    align-self: center;
+    align-self: center; /* Centruje w pionie */
     white-space: nowrap;
     overflow: visible; /* Zapewnia widoczność całej kwoty */
 }
 
-/.transaction-amount.positive {
-    color: #0f0; /* Zielony dla przychodów */
+.transaction-amount.positive {
+    color: #0f0; /* Zielony kolor dla pozytywnych kwot */
 }
 
 .transaction-amount.negative {
-    color: #f00; /* Czerwony dla wydatków */
+    color: #f00; /* Czerwony kolor dla negatywnych kwot */
 }
 
 /* Przycisk Usuń */
@@ -188,15 +188,15 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    justify-self: center; /* Centrowanie w siatce */
-    align-self: center; /* Wyśrodkowanie w pionie */
-    width: 100%; /* Dopasowanie szerokości */
-    max-width: 60px;
+    align-self: center; /* Centrowanie przycisku w pionie */
+    justify-self: center; /* Centrowanie przycisku w siatce */
     transition: background 0.3s;
+    width: 100%; /* Dopasowanie do szerokości kontenera */
+    max-width: 70px; /* Maksymalna szerokość przycisku */
 }
 
 button.delete-btn:hover {
-    background: #f00;
+    background: #f00; /* Czerwony kolor na hover */
 }
 
 /* Eksport */
