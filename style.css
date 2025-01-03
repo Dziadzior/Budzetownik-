@@ -37,7 +37,7 @@ h1 {
 .balance {
     text-align: center;
     margin: 20px 0;
-    font-size: 2em;
+    font-size: 2em; /* Powiększone saldo */
     font-weight: bold;
     color: #0f0;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
@@ -146,14 +146,14 @@ form button:hover {
     padding: 0;
     margin: 20px 0;
 }
-/* Lista transakcji */
+
 #transaction-list li {
     background: #333;
     margin: 10px 0;
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto 60px; /* Ikona, Szczegóły, Kwota, Przycisk */
+    grid-template-columns: 40px 1fr auto; /* Ikona, Szczegóły, Przycisk */
     align-items: center; /* Centruje elementy w pionie */
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -165,17 +165,33 @@ form button:hover {
     font-size: 1.3em;
     font-weight: bold;
     text-align: right;
-    align-self: center; /* Centruje w pionie */
-    white-space: nowrap;
+    align-self: center; /* Centruje tekst w pionie */
+    white-space: nowrap; /* Zapobiega łamaniu tekstu */
     overflow: visible; /* Zapewnia widoczność całej kwoty */
+    margin-right: 10px; /* Odstęp od prawej krawędzi */
 }
 
 .transaction-amount.positive {
-    color: #0f0; /* Zielony kolor dla pozytywnych kwot */
+    color: #0f0; /* Zielony dla przychodów */
 }
 
 .transaction-amount.negative {
-    color: #f00; /* Czerwony kolor dla negatywnych kwot */
+    color: #f00; /* Czerwony dla wydatków */
+}
+
+/* Ikona transakcji */
+.transaction-icon {
+    font-size: 1.8em;
+    text-align: center;
+    align-self: center; /* Wyśrodkowanie w pionie */
+}
+
+/* Szczegóły transakcji */
+.transaction-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrowanie w pionie */
+    flex: 1; /* Elastyczna szerokość */
 }
 
 /* Przycisk Usuń */
@@ -188,15 +204,15 @@ button.delete-btn {
     cursor: pointer;
     font-size: 0.9em;
     text-align: center;
-    align-self: center; /* Centrowanie przycisku w pionie */
-    justify-self: center; /* Centrowanie przycisku w siatce */
+    align-self: center; /* Centruje przycisk w pionie */
+    justify-self: center; /* Centruje przycisk w poziomie */
+    width: 80px; /* Stała szerokość przycisku */
+    height: 40px; /* Stała wysokość przycisku */
     transition: background 0.3s;
-    width: 100%; /* Dopasowanie do szerokości kontenera */
-    max-width: 70px; /* Maksymalna szerokość przycisku */
 }
 
 button.delete-btn:hover {
-    background: #f00; /* Czerwony kolor na hover */
+    background: #f00;
 }
 
 /* Eksport */
@@ -240,7 +256,7 @@ button.delete-btn:hover {
     }
 
     #transaction-list li {
-        grid-template-columns: 30px 1fr auto;
+        grid-template-columns: 30px 1fr 50px;
         padding: 10px 15px;
     }
 
@@ -253,7 +269,7 @@ button.delete-btn:hover {
     }
 
     button.delete-btn {
-        max-width: 60px;
+        max-width: 40px;
         padding: 8px;
     }
 }
