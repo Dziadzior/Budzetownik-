@@ -93,7 +93,7 @@ form button:hover {
 
 .filters button {
     flex: 1;
-    padding: 10px 15px;
+    padding: 10px;
     border: none;
     border-radius: 8px;
     background: #444;
@@ -101,6 +101,7 @@ form button:hover {
     font-size: 1em;
     font-weight: bold;
     cursor: pointer;
+    text-align: center;
     transition: background 0.3s, transform 0.2s;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
@@ -129,7 +130,7 @@ form button:hover {
     padding: 15px 20px;
     border-radius: 8px;
     display: grid;
-    grid-template-columns: 40px 1fr auto;
+    grid-template-columns: 40px 1fr 50px; /* Dostosowanie dla przycisku Usuń */
     align-items: center;
     gap: 10px;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
@@ -177,12 +178,15 @@ button.delete-btn {
     color: #fff;
     border: none;
     border-radius: 5px;
-    padding: 8px 12px;
+    padding: 10px;
     cursor: pointer;
     font-size: 0.9em;
+    text-align: center;
+    justify-self: center; /* Centrowanie w siatce */
+    align-self: center; /* Centrowanie w pionie */
+    width: 100%; /* Dopasowanie szerokości */
+    max-width: 50px; /* Ograniczenie szerokości */
     transition: background 0.3s;
-    align-self: center;
-    justify-self: center;
 }
 
 button.delete-btn:hover {
@@ -230,7 +234,7 @@ button.delete-btn:hover {
     }
 
     #transaction-list li {
-        grid-template-columns: 30px 1fr auto;
+        grid-template-columns: 30px 1fr 50px;
         padding: 10px 15px;
     }
 
@@ -240,5 +244,10 @@ button.delete-btn:hover {
 
     .transaction-amount {
         font-size: 1.1em;
+    }
+
+    button.delete-btn {
+        max-width: 40px;
+        padding: 8px;
     }
 }
