@@ -16,6 +16,17 @@ body {
     min-height: 100vh;
 }
 
+/* Pasek tytułowy */
+#titlebar {
+    height: 50px;
+    background-color: #ff0000;
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    font-size: 18px;
+}
+
 /* Kontener */
 .container {
     background: #222;
@@ -193,6 +204,31 @@ button.delete-btn {
 
 button.delete-btn:hover {
     background: #f00;
+}
+
+/* Eksport */
+.export-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.export-buttons button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #444;
+    color: #fff;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+.export-buttons button:hover {
+    background: #666;
+    transform: translateY(-2px);
 }
 
 /* Responsywność */
