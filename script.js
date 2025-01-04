@@ -40,7 +40,7 @@ function addTransactionToList(transaction) {
             <div class="transaction-category">${transaction.category}</div>
         </div>
         <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
-            ${transaction.amount > 0 ? '+' : ''}${transaction.amount.toFixed(2)} zł
+            ${transaction.amount > 0 ? '+' : ''}${transaction.originalAmount.toFixed(2)} ${transaction.currency}
         </div>
         <div class="transaction-actions">
             <button class="edit-btn" onclick="editTransaction('${transaction.id}')">Edytuj</button>
@@ -141,14 +141,13 @@ transactionForm.addEventListener('submit', (e) => {
         return;
     }
 
-    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
     const convertedAmount = convertCurrency(amount, currency);
-    console.log(`Po przeliczeniu: ${convertedAmount}`);
 
     const transaction = {
         id: Date.now().toString(),
         description,
         amount: convertedAmount,
+        originalAmount: amount, // Zachowaj oryginalną kwotę
         category,
         currency,
     };
@@ -174,10 +173,7 @@ function convertCurrency(amount, currency) {
         return amount; // Jeśli waluta nie jest znana, zwróć oryginalną kwotę
     }
 
-    const convertedAmount = amount / exchangeRates[currency]; // Zamień logikę na dzielenie
-    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
-    console.log(`Po przeliczeniu: ${convertedAmount}`);
-    return convertedAmount;
+    return amount * exchangeRates[currency]; // Przeliczanie na PLN
 }
 
 // Edycja transakcji
@@ -186,7 +182,7 @@ function editTransaction(id) {
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.amount;
+    document.getElementById('amount').value = transaction.originalAmount; // Oryginalna wartość
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
