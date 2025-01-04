@@ -3,6 +3,10 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const ctx = document.getElementById('expense-chart')?.getContext('2d');
 const filterButtons = document.querySelectorAll('.filter');
+const dateFilter = document.getElementById('date-filter');
+const amountMinFilter = document.getElementById('amount-min');
+const amountMaxFilter = document.getElementById('amount-max');
+const applyFiltersButton = document.getElementById('apply-filters');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
@@ -49,14 +53,23 @@ async function updateBalance() {
     }
 }
 
-// Renderowanie transakcji
+// Renderowanie transakcji z filtrami
 function renderTransactions(filter = 'all') {
     transactionList.innerHTML = ''; // Czyści listę transakcji
-    const filteredTransactions = transactions.filter(transaction =>
-        filter === 'all' ||
-        (filter === 'income' && transaction.amount > 0) ||
-        (filter === 'expense' && transaction.amount < 0)
-    );
+    const filteredTransactions = transactions.filter(transaction => {
+        const meetsTypeFilter =
+            filter === 'all' ||
+            (filter === 'income' && transaction.amount > 0) ||
+            (filter === 'expense' && transaction.amount < 0);
+
+        const meetsDateFilter = !dateFilter.value || transaction.date === dateFilter.value;
+        const meetsAmountFilter =
+            (!amountMinFilter.value || transaction.amount >= parseFloat(amountMinFilter.value)) &&
+            (!amountMaxFilter.value || transaction.amount <= parseFloat(amountMaxFilter.value));
+
+        return meetsTypeFilter && meetsDateFilter && meetsAmountFilter;
+    });
+
     console.log("Filtrowane transakcje:", filteredTransactions);
 
     filteredTransactions.forEach(transaction => addTransactionToList(transaction));
@@ -118,7 +131,6 @@ async function addTransaction(e) {
     const convertedAmount = await convertCurrency(amount, currency);
 
     if (editTransactionId) {
-        // Aktualizacja istniejącej transakcji
         const transactionIndex = transactions.findIndex(t => t.id === editTransactionId);
         if (transactionIndex > -1) {
             transactions[transactionIndex] = {
@@ -130,10 +142,9 @@ async function addTransaction(e) {
                 currency,
                 date,
             };
-            editTransactionId = null; // Resetowanie id po edycji
+            editTransactionId = null;
         }
     } else {
-        // Dodanie nowej transakcji
         const transaction = {
             id: Date.now().toString(),
             description,
@@ -162,9 +173,9 @@ function editTransaction(id) {
     document.getElementById('amount').value = transaction.amount;
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
-    document.getElementById('date-filter').value = transaction.date || ""; // Jeśli transakcja ma datę
+    document.getElementById('date-filter').value = transaction.date || "";
 
-    editTransactionId = id; // Ustawiamy id edytowanej transakcji
+    editTransactionId = id;
 }
 
 // Usuwanie transakcji
@@ -221,6 +232,11 @@ filterButtons.forEach(button => {
         button.classList.add('active');
         renderTransactions(button.dataset.filter);
     });
+});
+
+applyFiltersButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    renderTransactions();
 });
 
 renderTransactions();
