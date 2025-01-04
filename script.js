@@ -7,46 +7,25 @@ const filterButtons = document.querySelectorAll('.filter');
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
 
-async function pobierzKursyWalut() {
-    const kursy = {
-        PLN: 1,
-        USD: 4.5,
-        EUR: 4.8
-    };
-    console.log('Pobrane kursy walut:', kursy);
-    return kursy;
+// Funkcja do zapisywania transakcji w localStorage
+function zapiszTransakcje() {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    console.log('Zapisano transakcje w localStorage:', transactions);
 }
 
-async function przeliczWalute(kwota, waluta) {
-    const kursy = await pobierzKursyWalut();
-    const kurs = kursy[waluta];
-    if (!kurs) {
-        console.error(`Nieznana waluta: ${waluta}`);
-        return kwota;
-    }
-    const przeliczonaKwota = kwota * kurs;
-    console.log(`Przeliczono: ${kwota} ${waluta} na ${przeliczonaKwota} PLN`);
-    return przeliczonaKwota;
+// Funkcja do renderowania transakcji
+function renderujTransakcje(filtr = 'all') {
+    transactionList.innerHTML = '';
+    const przefiltrowaneTransakcje = transactions.filter(transakcja =>
+        filtr === 'all' ||
+        (filtr === 'income' && transakcja.amount > 0) ||
+        (filtr === 'expense' && transakcja.amount < 0)
+    );
+    console.log('Filtrowane transakcje:', przefiltrowaneTransakcje);
+    przefiltrowaneTransakcje.forEach(dodajTransakcjeDoListy);
 }
 
-async function aktualizujSaldo() {
-    const kursy = await pobierzKursyWalut();
-    const saldo = transactions.reduce((suma, transakcja) => {
-        const kurs = kursy[transakcja.currency] || 1;
-        return suma + (transakcja.amount * kurs);
-    }, 0);
-    balanceElement.textContent = `${saldo.toFixed(2)} zł`;
-
-    if (saldo > 0) {
-        balanceElement.className = 'positive';
-    } else if (saldo < 0) {
-        balanceElement.className = 'negative';
-    } else {
-        balanceElement.className = 'zero';
-    }
-    console.log('Aktualne saldo:', saldo);
-}
-
+// Funkcja do dodawania transakcji do listy
 function dodajTransakcjeDoListy(transakcja) {
     const li = document.createElement('li');
     const ikonaKategorii = document.querySelector(
@@ -71,22 +50,9 @@ function dodajTransakcjeDoListy(transakcja) {
     transactionList.appendChild(li);
 }
 
-function zapiszTransakcje() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    console.log('Zapisano transakcje w localStorage:', transactions);
-}
+// Inne funkcje...
 
-function renderujTransakcje(filtr = 'all') {
-    transactionList.innerHTML = '';
-    const przefiltrowaneTransakcje = transactions.filter(transakcja =>
-        filtr === 'all' ||
-        (filtr === 'income' && transakcja.amount > 0) ||
-        (filtr === 'expense' && transakcja.amount < 0)
-    );
-    console.log('Filtrowane transakcje:', przefiltrowaneTransakcje);
-    przefiltrowaneTransakcje.forEach(dodajTransakcjeDoListy);
-}
-
+// Obsługa formularza dodawania transakcji
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -116,7 +82,7 @@ transactionForm.addEventListener('submit', async (e) => {
     renderujTransakcje();
     aktualizujSaldo();
     transactionForm.reset();
-}
+});
 
 // Inicjalizacja
 renderujTransakcje();
