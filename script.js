@@ -3,14 +3,10 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const ctx = document.getElementById('expense-chart')?.getContext('2d');
 const filterButtons = document.querySelectorAll('.filter');
-const applyFiltersButton = document.getElementById('apply-filters');
-
-const dateFilter = document.getElementById('date-filter');
-const amountMinFilter = document.getElementById('amount-min');
-const amountMaxFilter = document.getElementById('amount-max');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
+let editTransactionId = null; // Id transakcji aktualnie edytowanej
 
 // Pobieranie kursów walut z API NBP
 async function getExchangeRates() {
@@ -31,45 +27,38 @@ async function getExchangeRates() {
 
 // Aktualizacja salda
 async function updateBalance() {
-    const rates = await getExchangeRates();
-    const balance = transactions.reduce((total, transaction) => {
-        const rate = rates[transaction.currency] || 1;
-        return total + (transaction.amount * rate);
-    }, 0);
+    try {
+        const rates = await getExchangeRates();
+        const balance = transactions.reduce((total, transaction) => {
+            const rate = rates[transaction.currency] || 1;
+            return total + (transaction.amount * rate);
+        }, 0);
+        balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    balanceElement.textContent = `${balance.toFixed(2)} zł`;
-
-    if (balance > 0) {
-        balanceElement.className = 'positive';
-    } else if (balance < 0) {
-        balanceElement.className = 'negative';
-    } else {
-        balanceElement.className = 'zero';
+        if (balance > 0) {
+            balanceElement.className = 'positive';
+        } else if (balance < 0) {
+            balanceElement.className = 'negative';
+        } else {
+            balanceElement.className = 'zero';
+        }
+        console.log("Aktualne saldo:", balance);
+    } catch (error) {
+        console.error("Błąd podczas aktualizacji salda:", error);
+        document.getElementById('form-errors').innerHTML = `<p>Nie udało się zaktualizować salda. Spróbuj ponownie później.</p>`;
     }
-    console.log("Aktualne saldo:", balance);
 }
 
-// Renderowanie transakcji z filtrami
+// Renderowanie transakcji
 function renderTransactions(filter = 'all') {
     transactionList.innerHTML = ''; // Czyści listę transakcji
-    const filteredTransactions = transactions.filter(transaction => {
-        const isInFilter =
-            filter === 'all' ||
-            (filter === 'income' && transaction.amount > 0) ||
-            (filter === 'expense' && transaction.amount < 0);
-
-        const isInDate =
-            !dateFilter.value ||
-            new Date(transaction.date).toISOString().split('T')[0] === dateFilter.value;
-
-        const isInAmount =
-            (!amountMinFilter.value || transaction.amount >= parseFloat(amountMinFilter.value)) &&
-            (!amountMaxFilter.value || transaction.amount <= parseFloat(amountMaxFilter.value));
-
-        return isInFilter && isInDate && isInAmount;
-    });
-
+    const filteredTransactions = transactions.filter(transaction =>
+        filter === 'all' ||
+        (filter === 'income' && transaction.amount > 0) ||
+        (filter === 'expense' && transaction.amount < 0)
+    );
     console.log("Filtrowane transakcje:", filteredTransactions);
+
     filteredTransactions.forEach(transaction => addTransactionToList(transaction));
 }
 
@@ -98,7 +87,20 @@ function addTransactionToList(transaction) {
     transactionList.appendChild(li);
 }
 
-// Dodawanie transakcji
+// Przeliczanie waluty na PLN
+async function convertCurrency(amount, currency) {
+    const rates = await getExchangeRates();
+    const rate = rates[currency];
+    if (!rate) {
+        console.error(`Nieznana waluta: ${currency}`);
+        return amount;
+    }
+    const convertedAmount = amount * rate;
+    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
+    return convertedAmount;
+}
+
+// Dodawanie lub edytowanie transakcji
 async function addTransaction(e) {
     e.preventDefault();
 
@@ -106,26 +108,44 @@ async function addTransaction(e) {
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
     const currency = document.getElementById('currency').value;
+    const date = document.getElementById('date-filter').value;
 
     if (!description || isNaN(amount) || !category || !currency) {
         alert('Wypełnij wszystkie pola!');
         return;
     }
 
-    const rates = await getExchangeRates();
-    const convertedAmount = amount * (rates[currency] || 1);
+    const convertedAmount = await convertCurrency(amount, currency);
 
-    const transaction = {
-        id: Date.now().toString(),
-        description,
-        amount,
-        convertedAmount,
-        category,
-        currency,
-        date: new Date().toISOString(),
-    };
+    if (editTransactionId) {
+        // Aktualizacja istniejącej transakcji
+        const transactionIndex = transactions.findIndex(t => t.id === editTransactionId);
+        if (transactionIndex > -1) {
+            transactions[transactionIndex] = {
+                id: editTransactionId,
+                description,
+                amount,
+                convertedAmount,
+                category,
+                currency,
+                date,
+            };
+            editTransactionId = null; // Resetowanie id po edycji
+        }
+    } else {
+        // Dodanie nowej transakcji
+        const transaction = {
+            id: Date.now().toString(),
+            description,
+            amount,
+            convertedAmount,
+            category,
+            currency,
+            date,
+        };
+        transactions.push(transaction);
+    }
 
-    transactions.push(transaction);
     saveTransactions();
     renderTransactions();
     updateBalance();
@@ -135,15 +155,16 @@ async function addTransaction(e) {
 
 // Edycja transakcji
 function editTransaction(id) {
-    const transaction = transactions.find(trans => trans.id === id);
+    const transaction = transactions.find(t => t.id === id);
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
     document.getElementById('amount').value = transaction.amount;
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
+    document.getElementById('date-filter').value = transaction.date || ""; // Jeśli transakcja ma datę
 
-    removeTransaction(id); // Usuń starą wersję przed zapisaniem zmienionej
+    editTransactionId = id; // Ustawiamy id edytowanej transakcji
 }
 
 // Usuwanie transakcji
@@ -191,12 +212,6 @@ function updateChart() {
         },
     });
 }
-
-// Zastosowanie filtrów
-applyFiltersButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    renderTransactions();
-});
 
 // Inicjalizacja
 transactionForm.addEventListener('submit', addTransaction);
