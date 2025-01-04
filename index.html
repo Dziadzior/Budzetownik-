@@ -24,26 +24,29 @@
       <h2>Saldo: <span id="balance">0.00 zł</span></h2>
     </div>
 
-    <!-- Wybór waluty -->
-    <div class="currency-wrapper">
-      <label for="currency">Waluta:</label>
-      <select id="currency">
-        <option value="PLN">PLN</option>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-      </select>
-    </div>
-
-    <div id="form-errors" class="error-messages"></div>
-
     <!-- Formularz dodawania transakcji -->
     <form id="transaction-form">
-      <input type="text" id="description" placeholder="Opis" required>
-      <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required step="0.01">
-      <div class="category-wrapper">
-      div class="advanced-filters">
-  <label for="date-filter">Data:</label>
-  <input type="date" id="date-filter">
+      <!-- Wybór waluty -->
+      <div class="form-group">
+        <label for="currency">Waluta:</label>
+        <select id="currency">
+          <option value="PLN">PLN</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+        </select>
+      </div>
+      <!-- Opis transakcji -->
+      <div class="form-group">
+        <label for="description">Opis:</label>
+        <input type="text" id="description" placeholder="Opis" required>
+      </div>
+      <!-- Kwota transakcji -->
+      <div class="form-group">
+        <label for="amount">Kwota (+ przychód, - wydatek):</label>
+        <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required step="0.01">
+      </div>
+      <!-- Kategoria transakcji -->
+      <div class="form-group">
         <label for="category">Kategoria:</label>
         <select id="category" required>
           <optgroup label="Dom">
@@ -63,16 +66,52 @@
           </optgroup>
           <!-- Dodaj pozostałe kategorie tutaj -->
         </select>
-        <label for="amount-filter">Przedział kwoty:</label>
-  <input type="number" id="amount-min" placeholder="Min">
-  <input type="number" id="amount-max" placeholder="Max">
-  <button id="apply-filters">Zastosuj filtry</button>
-</div>
       </div>
+      <!-- Data transakcji -->
+      <div class="form-group">
+        <label for="date">Data:</label>
+        <input type="date" id="date" required>
+      </div>
+      <!-- Przycisk dodawania transakcji -->
       <button type="submit">Dodaj</button>
     </form>
 
-    <!-- Filtry -->
+    <!-- Filtry zaawansowane -->
+    <div class="advanced-filters">
+      <h3>Filtry zaawansowane</h3>
+      <div class="form-group">
+        <label for="date-filter">Data:</label>
+        <input type="date" id="date-filter">
+      </div>
+      <div class="form-group">
+        <label for="category-filter">Kategoria:</label>
+        <select id="category-filter">
+          <option value="all">Wszystkie</option>
+          <optgroup label="Dom">
+            <option value="Wynajem">Wynajem</option>
+            <option value="Umeblowanie">Umeblowanie</option>
+            <!-- Dodaj pozostałe kategorie -->
+          </optgroup>
+          <optgroup label="Jedzenie">
+            <option value="Restauracje">Restauracje</option>
+            <option value="Zakupy spożywcze">Zakupy spożywcze</option>
+            <!-- Dodaj pozostałe kategorie -->
+          </optgroup>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="amount-min">Kwota minimalna:</label>
+        <input type="number" id="amount-min" placeholder="Min">
+      </div>
+      <div class="form-group">
+        <label for="amount-max">Kwota maksymalna:</label>
+        <input type="number" id="amount-max" placeholder="Max">
+      </div>
+      <!-- Przycisk zastosowania filtrów -->
+      <button id="apply-filters">Zastosuj filtry</button>
+    </div>
+
+    <!-- Filtry podstawowe -->
     <div class="filters">
       <button data-filter="all" class="filter active">Wszystkie</button>
       <button data-filter="income" class="filter">Przychody</button>
@@ -98,6 +137,7 @@
     <canvas id="expense-chart" width="400" height="200" aria-label="Wykres wydatków według kategorii"></canvas>
   </div>
 
+  <!-- Ładowanie skryptów -->
   <script src="script.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

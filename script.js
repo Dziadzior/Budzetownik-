@@ -3,6 +3,11 @@ const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const ctx = document.getElementById('expense-chart')?.getContext('2d');
 const filterButtons = document.querySelectorAll('.filter');
+const applyFiltersButton = document.getElementById('apply-filters');
+
+const dateFilter = document.getElementById('date-filter');
+const amountMinFilter = document.getElementById('amount-min');
+const amountMaxFilter = document.getElementById('amount-max');
 
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
@@ -15,7 +20,7 @@ async function getExchangeRates() {
         const rates = data[0].rates.reduce((acc, rate) => {
             acc[rate.code] = rate.mid;
             return acc;
-        }, { PLN: 1 });
+        }, { PLN: 1 }); // Dodanie PLN jako domyślnej waluty
         console.log("Pobrane kursy walut:", rates);
         return rates;
     } catch (error) {
@@ -26,38 +31,45 @@ async function getExchangeRates() {
 
 // Aktualizacja salda
 async function updateBalance() {
-    try {
-        const rates = await getExchangeRates();
-        const balance = transactions.reduce((total, transaction) => {
-            const rate = rates[transaction.currency] || 1;
-            return total + (transaction.amount * rate);
-        }, 0);
-        balanceElement.textContent = `${balance.toFixed(2)} zł`;
+    const rates = await getExchangeRates();
+    const balance = transactions.reduce((total, transaction) => {
+        const rate = rates[transaction.currency] || 1;
+        return total + (transaction.amount * rate);
+    }, 0);
 
-        if (balance > 0) {
-            balanceElement.className = 'positive';
-        } else if (balance < 0) {
-            balanceElement.className = 'negative';
-        } else {
-            balanceElement.className = 'zero';
-        }
-        console.log("Aktualne saldo:", balance);
-    } catch (error) {
-        console.error("Błąd podczas aktualizacji salda:", error);
-        document.getElementById('form-errors').innerHTML = `<p>Nie udało się zaktualizować salda. Spróbuj ponownie później.</p>`;
+    balanceElement.textContent = `${balance.toFixed(2)} zł`;
+
+    if (balance > 0) {
+        balanceElement.className = 'positive';
+    } else if (balance < 0) {
+        balanceElement.className = 'negative';
+    } else {
+        balanceElement.className = 'zero';
     }
+    console.log("Aktualne saldo:", balance);
 }
 
-// Renderowanie transakcji
+// Renderowanie transakcji z filtrami
 function renderTransactions(filter = 'all') {
-    transactionList.innerHTML = '';
-    const filteredTransactions = transactions.filter(transaction =>
-        filter === 'all' ||
-        (filter === 'income' && transaction.amount > 0) ||
-        (filter === 'expense' && transaction.amount < 0)
-    );
-    console.log("Filtrowane transakcje:", filteredTransactions);
+    transactionList.innerHTML = ''; // Czyści listę transakcji
+    const filteredTransactions = transactions.filter(transaction => {
+        const isInFilter =
+            filter === 'all' ||
+            (filter === 'income' && transaction.amount > 0) ||
+            (filter === 'expense' && transaction.amount < 0);
 
+        const isInDate =
+            !dateFilter.value ||
+            new Date(transaction.date).toISOString().split('T')[0] === dateFilter.value;
+
+        const isInAmount =
+            (!amountMinFilter.value || transaction.amount >= parseFloat(amountMinFilter.value)) &&
+            (!amountMaxFilter.value || transaction.amount <= parseFloat(amountMaxFilter.value));
+
+        return isInFilter && isInDate && isInAmount;
+    });
+
+    console.log("Filtrowane transakcje:", filteredTransactions);
     filteredTransactions.forEach(transaction => addTransactionToList(transaction));
 }
 
@@ -86,19 +98,6 @@ function addTransactionToList(transaction) {
     transactionList.appendChild(li);
 }
 
-// Przeliczanie waluty na PLN
-async function convertCurrency(amount, currency) {
-    const rates = await getExchangeRates();
-    const rate = rates[currency];
-    if (!rate) {
-        console.error(`Nieznana waluta: ${currency}`);
-        return amount;
-    }
-    const convertedAmount = amount * rate;
-    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
-    return convertedAmount;
-}
-
 // Dodawanie transakcji
 async function addTransaction(e) {
     e.preventDefault();
@@ -113,7 +112,8 @@ async function addTransaction(e) {
         return;
     }
 
-    const convertedAmount = await convertCurrency(amount, currency);
+    const rates = await getExchangeRates();
+    const convertedAmount = amount * (rates[currency] || 1);
 
     const transaction = {
         id: Date.now().toString(),
@@ -122,11 +122,10 @@ async function addTransaction(e) {
         convertedAmount,
         category,
         currency,
-        date: new Date().toISOString().split('T')[0], // Dodanie daty transakcji
+        date: new Date().toISOString(),
     };
 
     transactions.push(transaction);
-    console.log("Dodano transakcję:", transaction);
     saveTransactions();
     renderTransactions();
     updateBalance();
@@ -193,22 +192,10 @@ function updateChart() {
     });
 }
 
-// Obsługa filtrowania
-document.getElementById('apply-filters').addEventListener('click', () => {
-    const dateFilter = document.getElementById('date-filter').value;
-    const categoryFilter = document.getElementById('category-filter').value;
-    const amountMin = parseFloat(document.getElementById('amount-min').value);
-    const amountMax = parseFloat(document.getElementById('amount-max').value);
-
-    const filteredTransactions = transactions.filter(transaction => {
-        const matchesDate = dateFilter ? transaction.date === dateFilter : true;
-        const matchesCategory = categoryFilter !== 'all' ? transaction.category === categoryFilter : true;
-        const matchesAmount = (!isNaN(amountMin) ? transaction.amount >= amountMin : true) &&
-                              (!isNaN(amountMax) ? transaction.amount <= amountMax : true);
-        return matchesDate && matchesCategory && matchesAmount;
-    });
-
-    renderTransactions(filteredTransactions);
+// Zastosowanie filtrów
+applyFiltersButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    renderTransactions();
 });
 
 // Inicjalizacja
