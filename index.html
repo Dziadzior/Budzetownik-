@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Rozbudowany Budżetownik - zarządzaj swoimi finansami w prosty sposób.">
   <title>Rozbudowany Budżetownik</title>
   <!-- Ładowanie stylów -->
   <link rel="stylesheet" href="./style.css">
@@ -22,18 +23,23 @@
     <div class="balance">
       <h2>Saldo: <span id="balance">0.00 zł</span></h2>
     </div>
+
+    <!-- Wybór waluty -->
     <div class="currency-wrapper">
-  <label for="currency">Waluta:</label>
-  <select id="currency">
-    <option value="PLN">PLN</option>
-    <option value="USD">USD</option>
-    <option value="EUR">EUR</option>
-  </select>
-</div>
+      <label for="currency">Waluta:</label>
+      <select id="currency">
+        <option value="PLN">PLN</option>
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+      </select>
+    </div>
+
     <div id="form-errors" class="error-messages"></div>
+
+    <!-- Formularz dodawania transakcji -->
     <form id="transaction-form">
       <input type="text" id="description" placeholder="Opis" required>
-      <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required>
+      <input type="number" id="amount" placeholder="Kwota (+ przychód, - wydatek)" required step="0.01">
       <div class="category-wrapper">
         <label for="category">Kategoria:</label>
         <select id="category" required>
@@ -52,64 +58,38 @@
             <option value="Kawiarnie" data-icon="☕">Kawiarnie</option>
             <option value="Przekąski" data-icon="🍿">Przekąski</option>
           </optgroup>
-          <optgroup label="Rachunki">
-            <option value="Prąd" data-icon="⚡">Prąd</option>
-            <option value="Woda" data-icon="💧">Woda</option>
-            <option value="Gaz" data-icon="🔥">Gaz</option>
-            <option value="Internet" data-icon="🌐">Internet</option>
-            <option value="Telefon" data-icon="📱">Telefon</option>
-            <option value="Śmieci" data-icon="🗑️">Śmieci</option>
-            <option value="Ubezpieczenie domu" data-icon="🏠">Ubezpieczenie domu</option>
-          </optgroup>
-          <optgroup label="Rozrywka">
-            <option value="Kino/Teatr" data-icon="🎭">Kino/Teatr</option>
-            <option value="Subskrypcje" data-icon="📺">Subskrypcje</option>
-            <option value="Gry komputerowe" data-icon="🎮">Gry komputerowe</option>
-            <option value="Sport" data-icon="⚽">Sport</option>
-            <option value="Hobby" data-icon="🎨">Hobby</option>
-            <option value="Podróże" data-icon="✈️">Podróże</option>
-          </optgroup>
-          <optgroup label="Przychody">
-            <option value="Pensja" data-icon="💰">Pensja</option>
-            <option value="Dodatkowa praca" data-icon="🛠️">Dodatkowa praca</option>
-            <option value="Prezenty" data-icon="🎁">Prezenty</option>
-            <option value="Sprzedaż" data-icon="🛒">Sprzedaż</option>
-            <option value="Zyski z inwestycji" data-icon="📈">Zyski z inwestycji</option>
-            <option value="Zwroty podatku" data-icon="💸">Zwroty podatku</option>
-          </optgroup>
-          <optgroup label="Transport">
-            <option value="Paliwo" data-icon="⛽">Paliwo</option>
-            <option value="Bilety komunikacji" data-icon="🚌">Bilety komunikacji</option>
-            <option value="Naprawa samochodu" data-icon="🚗">Naprawa samochodu</option>
-            <option value="Ubezpieczenie samochodu" data-icon="🚘">Ubezpieczenie samochodu</option>
-            <option value="Parking" data-icon="🅿️">Parking</option>
-          </optgroup>
-          <optgroup label="Zdrowie">
-            <option value="Leki" data-icon="💊">Leki</option>
-            <option value="Wizyty lekarskie" data-icon="🩺">Wizyty lekarskie</option>
-            <option value="Ubezpieczenie zdrowotne" data-icon="🏥">Ubezpieczenie zdrowotne</option>
-            <option value="Fitness" data-icon="🏋️‍♂️">Fitness</option>
-          </optgroup>
+          <!-- Dodaj pozostałe kategorie tutaj -->
         </select>
       </div>
       <button type="submit">Dodaj</button>
     </form>
+
+    <!-- Filtry -->
     <div class="filters">
       <button data-filter="all" class="filter active">Wszystkie</button>
       <button data-filter="income" class="filter">Przychody</button>
       <button data-filter="expense" class="filter">Wydatki</button>
     </div>
+
+    <!-- Lista transakcji -->
     <ul id="transaction-list"></ul>
+
+    <!-- Eksport -->
     <div class="export-buttons">
       <button id="export-csv">Eksportuj do CSV</button>
       <button id="export-excel">Eksportuj do Excel</button>
     </div>
+
+    <!-- Podsumowanie kategorii -->
     <div id="category-summary">
-  <h3>Podsumowanie wydatków według kategorii</h3>
-  <ul id="summary-list"></ul>
-</div>
-    <canvas id="expense-chart" width="400" height="200"></canvas>
+      <h3>Podsumowanie wydatków według kategorii</h3>
+      <ul id="summary-list"></ul>
+    </div>
+
+    <!-- Wykres -->
+    <canvas id="expense-chart" width="400" height="200" aria-label="Wykres wydatków według kategorii"></canvas>
   </div>
+
   <script src="script.js"></script>
   <script>
     if ('serviceWorker' in navigator) {

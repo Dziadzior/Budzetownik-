@@ -27,13 +27,7 @@ async function updateBalance() {
     }, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    if (balance > 0) {
-        balanceElement.className = 'positive';
-    } else if (balance < 0) {
-        balanceElement.className = 'negative';
-    } else {
-        balanceElement.className = 'zero';
-    }
+    balanceElement.className = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero';
     console.log("Aktualne saldo:", balance);
 }
 
@@ -47,9 +41,7 @@ function renderTransactions(filter = 'all') {
     );
     console.log("Filtrowane transakcje:", filteredTransactions);
 
-    filteredTransactions.forEach(transaction => {
-        addTransactionToList(transaction);
-    });
+    filteredTransactions.forEach(transaction => addTransactionToList(transaction));
 }
 
 // Dodanie transakcji do listy
@@ -90,8 +82,8 @@ async function convertCurrency(amount, currency) {
     return convertedAmount;
 }
 
-// Obsługa formularza dodawania transakcji
-transactionForm.addEventListener('submit', async (e) => {
+// Dodawanie transakcji
+async function addTransaction(e) {
     e.preventDefault();
 
     const description = document.getElementById('description').value.trim();
@@ -122,7 +114,20 @@ transactionForm.addEventListener('submit', async (e) => {
     updateBalance();
     updateChart();
     transactionForm.reset();
-});
+}
+
+// Edycja transakcji
+function editTransaction(id) {
+    const transaction = transactions.find(trans => trans.id === id);
+    if (!transaction) return;
+
+    document.getElementById('description').value = transaction.description;
+    document.getElementById('amount').value = transaction.amount;
+    document.getElementById('category').value = transaction.category;
+    document.getElementById('currency').value = transaction.currency;
+
+    removeTransaction(id); // Usuń starą wersję przed zapisaniem zmienionej
+}
 
 // Usuwanie transakcji
 function removeTransaction(id) {
@@ -171,6 +176,15 @@ function updateChart() {
 }
 
 // Inicjalizacja
+transactionForm.addEventListener('submit', addTransaction);
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        renderTransactions(button.dataset.filter);
+    });
+});
+
 renderTransactions();
 updateBalance();
 updateChart();

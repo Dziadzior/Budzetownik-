@@ -5,11 +5,28 @@
     box-sizing: border-box;
 }
 
+/* Zmienne CSS */
+:root {
+    --main-bg: #111;
+    --secondary-bg: #222;
+    --highlight-bg: #333;
+    --positive: #0f0;
+    --negative: #f00;
+    --neutral: #fff;
+    --button-bg: #f00;
+    --button-hover-bg: #c00;
+    --text-color: #fff;
+    --shadow: rgba(0, 0, 0, 0.5);
+    --error-bg: #f8d7da;
+    --error-text: #721c24;
+    --error-border: #f5c6cb;
+}
+
 /* Główne ustawienia */
 body {
     font-family: Arial, sans-serif;
-    background: #111;
-    color: #fff;
+    background: var(--main-bg);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -18,10 +35,10 @@ body {
 
 /* Kontener */
 .container {
-    background: #222;
+    background: var(--secondary-bg);
     padding: 1rem;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 10px var(--shadow);
     width: 90%;
     max-width: 400px;
 }
@@ -29,7 +46,7 @@ body {
 /* Tytuł */
 h1 {
     text-align: center;
-    color: #f00;
+    color: var(--negative);
     margin-bottom: 10px;
 }
 
@@ -39,28 +56,28 @@ h1 {
     margin: 20px 0;
     font-size: 2em;
     font-weight: bold;
-    color: #0f0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    text-shadow: 1px 1px 2px var(--shadow);
 }
 
 .balance span {
     display: inline-block;
     padding: 10px 20px;
     border-radius: 10px;
-    background: #222;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    background: var(--secondary-bg);
+    box-shadow: 0 4px 6px var(--shadow);
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
 #balance.positive {
-    color: #0f0;
+    color: var(--positive);
 }
 
 #balance.negative {
-    color: #f00;
+    color: var(--negative);
 }
 
 #balance.zero {
-    color: #fff;
+    color: var(--neutral);
 }
 
 /* Formularz */
@@ -72,17 +89,16 @@ form {
 
 form input, form select, form button {
     padding: 10px;
-    border: 1px solid #444;
+    border: 1px solid var(--highlight-bg);
     border-radius: 5px;
     font-size: 1em;
-    background: #333;
-    color: #fff;
+    background: var(--highlight-bg);
+    color: var(--text-color);
     width: 100%;
 }
 
 /* Kategorie */
 .category-wrapper {
-    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -91,77 +107,26 @@ form input, form select, form button {
 .category-wrapper label {
     font-size: 1em;
     margin-bottom: 5px;
-    color: #fff;
-}
-
-#category-summary {
-  background: #222;
-  margin: 20px 0;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-}
-
-#category-summary h3 {
-  color: #fff;
-  margin-bottom: 10px;
-}
-
-#summary-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-#summary-list li {
-  background: #333;
-  margin: 8px 0;
-  padding: 10px;
-  border-radius: 6px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: #fff;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
-#summary-list li span {
-  font-weight: bold;
-}
-
-.currency-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 15px;
+    color: var(--text-color);
 }
 
 .currency-wrapper label {
     font-size: 1em;
     margin-bottom: 5px;
-    color: #fff;
+    color: var(--text-color);
 }
 
-.currency-wrapper select {
-    padding: 10px;
-    border: 1px solid #444;
-    border-radius: 5px;
-    font-size: 1em;
-    background: #333;
-    color: #fff;
-    width: 100%;
-}
-
-/* Przycisk formularza */
+/* Przyciski formularza */
 form button {
-    background: #f00;
+    background: var(--button-bg);
     border: none;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 form button:hover {
-    background: #c00;
+    background: var(--button-hover-bg);
+    transform: translateY(-2px);
 }
 
 /* Lista transakcji */
@@ -172,7 +137,7 @@ form button:hover {
 }
 
 #transaction-list li {
-    background: #333;
+    background: var(--highlight-bg);
     margin: 10px 0;
     padding: 15px 20px;
     border-radius: 8px;
@@ -180,158 +145,66 @@ form button:hover {
     grid-template-columns: 40px 1fr auto;
     align-items: center;
     gap: 10px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-    color: #fff;
+    box-shadow: 0 3px 6px var(--shadow);
+    color: var(--text-color);
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
 }
 
-/* Ikona transakcji */
-.transaction-icon {
-    font-size: 1.8em;
-    text-align: center;
-    align-self: center;
-}
-
-/* Szczegóły transakcji */
-.transaction-details {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    flex: 1;
-}
-
-.transaction-description {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-.transaction-category {
-    font-size: 0.9em;
-    color: #aaa;
-    font-style: italic;
+#transaction-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px var(--shadow);
 }
 
 /* Kwota transakcji */
-.transaction-amount {
-    max-width: 100%;
-    font-size: 1.3em;
-    font-weight: bold;
-    text-align: right;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    align-self: center;
-}
-
 .transaction-amount.positive {
-    color: #0f0;
+    color: var(--positive);
 }
 
 .transaction-amount.negative {
-    color: #f00;
+    color: var(--negative);
 }
 
 /* Przyciski akcji */
-button.edit-btn,
-button.delete-btn {
+.transaction-actions button {
     padding: 8px 12px;
-    font-size: 0.9em;
-    font-weight: bold;
-    color: #fff;
     border: none;
     border-radius: 5px;
+    font-size: 0.9em;
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
-    text-align: center;
 }
 
-button.edit-btn {
-    background-color: #007bff;
-}
-
-button.edit-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-button.delete-btn {
-    background-color: #dc3545;
-}
-
-button.delete-btn:hover {
-    background-color: #a71d2a;
-    transform: translateY(-2px);
-}
-
-/* Kontener transakcji */
-#transaction-list li {
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    padding: 15px 20px;
-    gap: 10px;
-    background: #333;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-}
-
-/* Kontener przycisków */
-/* Stylizacja kontenera na przyciski */
-.transaction-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 10px;
-}
-
-/* Stylizacja przycisków */
-.transaction-actions button {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 0.9em;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-/* Stylizacja przycisku Edytuj */
 .transaction-actions .edit-btn {
     background-color: #007bff;
-    color: #fff;
+    color: var(--neutral);
 }
 
 .transaction-actions .edit-btn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
-/* Stylizacja przycisku Usuń */
 .transaction-actions .delete-btn {
-    background-color: #dc3545;
-    color: #fff;
+    background-color: var(--negative);
+    color: var(--neutral);
 }
 
 .transaction-actions .delete-btn:hover {
     background-color: #a71d2a;
+    transform: translateY(-2px);
 }
 
 /* Eksport */
-.export-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 10px;
-}
-
 .export-buttons button {
     flex: 1;
     padding: 10px;
     border: none;
     border-radius: 8px;
-    background: #444;
-    color: #fff;
+    background: var(--highlight-bg);
+    color: var(--text-color);
     font-size: 0.9em;
     cursor: pointer;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .export-buttons button:hover {
@@ -339,18 +212,15 @@ button.delete-btn:hover {
     transform: translateY(-2px);
 }
 
+/* Błędy formularza */
 .error-messages {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: var(--error-bg);
+    color: var(--error-text);
     padding: 10px;
     margin-bottom: 15px;
-    border: 1px solid #f5c6cb;
+    border: 1px solid var(--error-border);
     border-radius: 5px;
     display: none;
-}
-.error-messages p {
-    margin: 0;
-    font-size: 0.9em;
 }
 
 /* Responsywność */
@@ -364,24 +234,11 @@ button.delete-btn:hover {
         font-size: 1.8em;
     }
 
-    .filters button {
-        font-size: 0.9em;
-    }
-
     #transaction-list li {
         grid-template-columns: 30px 1fr auto;
     }
 
-    .transaction-description {
-        font-size: 1em;
-    }
-
     .transaction-amount {
         font-size: 1.1em;
-    }
-
-    button.delete-btn {
-        max-width: 40px;
-        padding: 8px;
     }
 }
