@@ -11,10 +11,10 @@ let chart;
 async function pobierzKursyWalut() {
     const kursy = {
         PLN: 1,
-        USD: 4.5, // Przykładowy kurs, podmień na aktualne dane
-        EUR: 4.8  // Przykładowy kurs, podmień na aktualne dane
+        USD: 4.5, // Przykładowy kurs
+        EUR: 4.8  // Przykładowy kurs
     };
-    console.log('Pobrane kursy walut:', kursy);
+    console.log("Pobrane kursy walut:", kursy);
     return kursy;
 }
 
@@ -26,14 +26,18 @@ async function przeliczWalute(kwota, waluta) {
         console.error(`Nieznana waluta: ${waluta}`);
         return kwota;
     }
-    const przeliczonaKwota = kwota * kurs;
+    const przeliczonaKwota = parseFloat((kwota * kurs).toFixed(2));
     console.log(`Przeliczono: ${kwota} ${waluta} na ${przeliczonaKwota} PLN`);
     return przeliczonaKwota;
 }
 
 // Aktualizacja salda
 async function aktualizujSaldo() {
-    const saldo = transactions.reduce((suma, transakcja) => suma + transakcja.amount, 0);
+    const kursy = await pobierzKursyWalut();
+    const saldo = transactions.reduce((suma, transakcja) => {
+        const kurs = kursy[transakcja.currency] || 1;
+        return suma + parseFloat((transakcja.amount * kurs).toFixed(2));
+    }, 0);
     balanceElement.textContent = `${saldo.toFixed(2)} zł`;
 
     if (saldo > 0) {
@@ -43,8 +47,7 @@ async function aktualizujSaldo() {
     } else {
         balanceElement.className = 'zero';
     }
-
-    console.log('Aktualne saldo:', saldo);
+    console.log("Aktualne saldo:", saldo);
 }
 
 // Dodawanie transakcji do listy
@@ -61,7 +64,7 @@ function dodajTransakcjeDoListy(transakcja) {
             <div class="transaction-category">${transakcja.category}</div>
         </div>
         <div class="transaction-amount ${transakcja.amount > 0 ? 'positive' : 'negative'}">
-            ${transakcja.amount > 0 ? '+' : ''}${transakcja.amount.toFixed(2)} PLN
+            ${transakcja.amount > 0 ? '+' : ''}${transakcja.amount.toFixed(2)} ${transakcja.currency} (${transakcja.convertedAmount.toFixed(2)} PLN)
         </div>
         <div class="transaction-actions">
             <button class="edit-btn" onclick="edytujTransakcje('${transakcja.id}')">Edytuj</button>
@@ -78,13 +81,11 @@ function usunTransakcje(id) {
     renderujTransakcje();
     aktualizujSaldo();
     aktualizujWykres();
-    console.log(`Usunięto transakcję o ID: ${id}`);
 }
 
 // Zapisywanie transakcji do localStorage
 function zapiszTransakcje() {
     localStorage.setItem('transactions', JSON.stringify(transactions));
-    console.log('Zapisano transakcje w localStorage:', transactions);
 }
 
 // Renderowanie transakcji
@@ -96,7 +97,6 @@ function renderujTransakcje(filtr = 'all') {
         (filtr === 'expense' && transakcja.amount < 0)
     );
     przefiltrowaneTransakcje.forEach(dodajTransakcjeDoListy);
-    console.log('Filtrowane transakcje:', przefiltrowaneTransakcje);
 }
 
 // Aktualizacja wykresu
@@ -107,9 +107,9 @@ function aktualizujWykres() {
     }
 
     const kategorie = {};
-    transactions.forEach(({ amount, category }) => {
+    transactions.forEach(({ amount, category, convertedAmount }) => {
         if (amount < 0) {
-            kategorie[category] = (kategorie[category] || 0) + Math.abs(amount);
+            kategorie[category] = (kategorie[category] || 0) + convertedAmount;
         }
     });
 
@@ -128,8 +128,7 @@ function aktualizujWykres() {
             ],
         },
     });
-
-    console.log('Dane do wykresu:', kategorie);
+    console.log("Dane do wykresu:", kategorie);
 }
 
 // Obsługa formularza dodawania transakcji
@@ -151,7 +150,8 @@ transactionForm.addEventListener('submit', async (e) => {
     const transakcja = {
         id: Date.now().toString(),
         description: opis,
-        amount: przeliczonaKwota,
+        amount: kwota,
+        convertedAmount: przeliczonaKwota,
         category: kategoria,
         currency: waluta,
     };
@@ -161,8 +161,8 @@ transactionForm.addEventListener('submit', async (e) => {
     renderujTransakcje();
     aktualizujSaldo();
     aktualizujWykres();
-    console.log('Dodano transakcję:', transakcja);
     transactionForm.reset();
+    console.log("Dodano transakcję:", transakcja);
 });
 
 // Edycja transakcji
@@ -180,7 +180,6 @@ function edytujTransakcje(id) {
     renderujTransakcje();
     aktualizujSaldo();
     aktualizujWykres();
-    console.log('Edytowano transakcję o ID:', id);
 }
 
 // Obsługa filtrów
@@ -193,8 +192,6 @@ filterButtons.forEach(button => {
 });
 
 // Inicjalizacja
-(async () => {
-    await aktualizujSaldo();
-    renderujTransakcje();
-    aktualizujWykres();
-})();
+renderujTransakcje();
+aktualizujSaldo();
+aktualizujWykres();
