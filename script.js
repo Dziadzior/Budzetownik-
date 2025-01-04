@@ -39,22 +39,30 @@ async function convertCurrency(amount, currency) {
 
 // Aktualizacja salda
 async function updateBalance() {
-    const rates = await getExchangeRates();
-    const balance = transactions.reduce((total, transaction) => {
-        const rate = rates[transaction.currency] || 1;
-        return total + (transaction.amount * rate);
-    }, 0);
+    try {
+        const rates = await getExchangeRates();
+        const balance = transactions.reduce((total, transaction) => {
+            const rate = rates[transaction.currency] || 1;
+            const converted = transaction.amount * rate;
+            console.log(
+                `Transakcja: ${transaction.amount} ${transaction.currency} = ${converted.toFixed(2)} PLN`
+            );
+            return total + converted;
+        }, 0);
 
-    balanceElement.textContent = `${balance.toFixed(2)} zł`;
+        balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    if (balance > 0) {
-        balanceElement.className = 'positive';
-    } else if (balance < 0) {
-        balanceElement.className = 'negative';
-    } else {
-        balanceElement.className = 'zero';
+        if (balance > 0) {
+            balanceElement.className = 'positive';
+        } else if (balance < 0) {
+            balanceElement.className = 'negative';
+        } else {
+            balanceElement.className = 'zero';
+        }
+        console.log("Aktualne saldo:", balance.toFixed(2));
+    } catch (error) {
+        console.error("Błąd podczas aktualizacji salda:", error);
     }
-    console.log("Aktualne saldo:", balance.toFixed(2)); // Zaktualizowany log
 }
 
 // Renderowanie transakcji
