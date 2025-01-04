@@ -35,7 +35,7 @@ async function convertCurrency(amount, currency) {
         console.error("Błąd podczas przeliczania waluty:", error);
         return amount;
     }
-}}
+}
 
 // Aktualizacja salda
 async function updateBalance() {
