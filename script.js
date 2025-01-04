@@ -20,19 +20,22 @@ async function getExchangeRates() {
 
 // Przeliczanie walut
 // Funkcja przeliczania waluty na PLN
+// Przeliczanie walut
 async function convertCurrency(amount, currency) {
-    const rates = await getExchangeRates();
-    const rate = rates[currency];
-
-    if (!rate) {
-        console.error(`Nieznana waluta: ${currency}`);
-        return amount; // Jeśli kurs nie istnieje, zwracamy oryginalną kwotę
+    try {
+        const rates = await getExchangeRates();
+        if (!rates[currency]) {
+            console.error(`Nieznana waluta: ${currency}`);
+            return amount;
+        }
+        const convertedAmount = parseFloat((amount * rates[currency]).toFixed(2));
+        console.log(`Przeliczono: ${amount} ${currency} = ${convertedAmount} PLN`);
+        return convertedAmount;
+    } catch (error) {
+        console.error("Błąd podczas przeliczania waluty:", error);
+        return amount;
     }
-
-    const convertedAmount = amount * rate;
-    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
-    return parseFloat(convertedAmount.toFixed(2)); // Dodajemy zaokrąglenie
-}
+}}
 
 // Aktualizacja salda
 async function updateBalance() {
@@ -95,34 +98,38 @@ function addTransactionToList(transaction) {
 // Obsługa formularza dodawania transakcji
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    try {
+        const description = document.getElementById('description').value.trim();
+        const amount = parseFloat(document.getElementById('amount').value);
+        const category = document.getElementById('category').value;
+        const currency = document.getElementById('currency').value;
 
-    const description = document.getElementById('description').value.trim();
-    const amount = parseFloat(document.getElementById('amount').value);
-    const category = document.getElementById('category').value;
-    const currency = document.getElementById('currency').value;
+        if (!description || isNaN(amount) || !category || !currency) {
+            alert('Wypełnij wszystkie pola!');
+            return;
+        }
 
-    if (!description || isNaN(amount) || !category || !currency) {
-        alert('Wypełnij wszystkie pola!');
-        return;
+        const convertedAmount = await convertCurrency(amount, currency);
+
+        const transaction = {
+            id: Date.now().toString(),
+            description,
+            amount,
+            convertedAmount,
+            category,
+            currency,
+        };
+
+        transactions.push(transaction);
+        console.log("Dodano transakcję:", transaction);
+        saveTransactions();
+        renderTransactions();
+        updateBalance();
+        updateChart();
+        transactionForm.reset();
+    } catch (error) {
+        console.error("Błąd podczas dodawania transakcji:", error);
     }
-
-    const convertedAmount = await convertCurrency(amount, currency);
-
-    const transaction = {
-        id: Date.now().toString(),
-        description,
-        amount,
-        convertedAmount,
-        category,
-        currency,
-    };
-
-    transactions.push(transaction);
-    saveTransactions();
-    renderTransactions();
-    updateBalance();
-    updateChart();
-    transactionForm.reset();
 });
 
 // Usuwanie transakcji
