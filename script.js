@@ -22,6 +22,8 @@ function updateBalance() {
     } else {
         balanceElement.className = 'zero';
     }
+
+    console.log('Aktualne saldo:', balance);
 }
 
 // Dodanie transakcji do listy
@@ -139,7 +141,9 @@ transactionForm.addEventListener('submit', (e) => {
         return;
     }
 
+    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
     const convertedAmount = convertCurrency(amount, currency);
+    console.log(`Po przeliczeniu: ${convertedAmount}`);
 
     const transaction = {
         id: Date.now().toString(),
@@ -160,17 +164,20 @@ transactionForm.addEventListener('submit', (e) => {
 // Przeliczanie waluty
 function convertCurrency(amount, currency) {
     const exchangeRates = {
-        PLN: 1,
-        USD: 4.5,
-        EUR: 4.8,
+        PLN: 1, // Podstawowa waluta
+        USD: 4.5, // Przykładowy kurs
+        EUR: 4.8, // Przykładowy kurs
     };
 
     if (!exchangeRates[currency]) {
         console.error(`Nieznana waluta: ${currency}`);
-        return amount;
+        return amount; // Jeśli waluta nie jest znana, zwróć oryginalną kwotę
     }
 
-    return amount / exchangeRates[currency];
+    const convertedAmount = amount / exchangeRates[currency]; // Zamień logikę na dzielenie
+    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
+    console.log(`Po przeliczeniu: ${convertedAmount}`);
+    return convertedAmount;
 }
 
 // Edycja transakcji
