@@ -19,16 +19,19 @@ async function getExchangeRates() {
 }
 
 // Przeliczanie walut
+// Funkcja przeliczania waluty na PLN
 async function convertCurrency(amount, currency) {
     const rates = await getExchangeRates();
     const rate = rates[currency];
+
     if (!rate) {
         console.error(`Nieznana waluta: ${currency}`);
-        return amount;
+        return amount; // Jeśli kurs nie istnieje, zwracamy oryginalną kwotę
     }
+
     const convertedAmount = amount * rate;
     console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
-    return convertedAmount;
+    return parseFloat(convertedAmount.toFixed(2)); // Dodajemy zaokrąglenie
 }
 
 // Aktualizacja salda
@@ -36,14 +39,9 @@ async function updateBalance() {
     const rates = await getExchangeRates();
     const balance = transactions.reduce((total, transaction) => {
         const rate = rates[transaction.currency] || 1;
-        const converted = transaction.amount * rate;
-        console.log(
-            `Transakcja: ${transaction.amount} ${transaction.currency} = ${converted.toFixed(
-                2
-            )} PLN`
-        );
-        return total + converted;
+        return total + (transaction.amount * rate);
     }, 0);
+
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
     if (balance > 0) {
@@ -53,7 +51,7 @@ async function updateBalance() {
     } else {
         balanceElement.className = 'zero';
     }
-    console.log("Aktualne saldo:", balance);
+    console.log("Aktualne saldo:", balance.toFixed(2)); // Zaktualizowany log
 }
 
 // Renderowanie transakcji
@@ -143,7 +141,10 @@ function saveTransactions() {
 
 // Aktualizacja wykresu
 function updateChart() {
-    if (!ctx || typeof Chart === 'undefined') return;
+    if (!ctx || typeof Chart === 'undefined') {
+        console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
+        return;
+    }
 
     const categories = {};
     transactions.forEach(({ convertedAmount, category }) => {
@@ -154,12 +155,15 @@ function updateChart() {
 
     if (chart) chart.destroy();
 
+    console.log("Dane do wykresu:", categories);
+
     chart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: Object.keys(categories),
             datasets: [
                 {
+                    label: 'Wydatki według kategorii',
                     data: Object.values(categories),
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
                 },
