@@ -12,7 +12,7 @@ async function getExchangeRates() {
     const rates = {
         PLN: 1,
         USD: 4.5,
-        EUR: 4.8,
+        EUR: 4.8
     };
     console.log("Pobrane kursy walut:", rates);
     return rates;
@@ -20,7 +20,6 @@ async function getExchangeRates() {
 
 // Przeliczanie walut
 async function convertCurrency(amount, currency) {
-    if (currency === 'PLN') return amount; // Ominięcie przeliczenia dla PLN
     const rates = await getExchangeRates();
     const rate = rates[currency];
     if (!rate) {
@@ -37,11 +36,23 @@ async function updateBalance() {
     const rates = await getExchangeRates();
     const balance = transactions.reduce((total, transaction) => {
         const rate = rates[transaction.currency] || 1;
-        return total + (transaction.amount * rate);
+        const converted = transaction.amount * rate;
+        console.log(
+            `Transakcja: ${transaction.amount} ${transaction.currency} = ${converted.toFixed(
+                2
+            )} PLN`
+        );
+        return total + converted;
     }, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    balanceElement.className = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero';
+    if (balance > 0) {
+        balanceElement.className = 'positive';
+    } else if (balance < 0) {
+        balanceElement.className = 'negative';
+    } else {
+        balanceElement.className = 'zero';
+    }
     console.log("Aktualne saldo:", balance);
 }
 
