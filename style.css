@@ -230,6 +230,35 @@ form button:hover {
     transform: translateY(-2px);
 }
 
+.advanced-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding: 10px;
+    background: var(--highlight-bg);
+    border-radius: 8px;
+}
+.advanced-filters label {
+    color: var(--text-color);
+    font-size: 0.9em;
+}
+.advanced-filters input, .advanced-filters select, .advanced-filters button {
+    padding: 8px;
+    border: 1px solid var(--highlight-bg);
+    border-radius: 5px;
+    font-size: 1em;
+    background: var(--highlight-bg);
+    color: var(--text-color);
+}
+.advanced-filters button {
+    background: var(--button-bg);
+    cursor: pointer;
+}
+.advanced-filters button:hover {
+    background: var(--button-hover-bg);
+}
+
 /* Responsywność */
 @media (max-width: 768px) {
     .container {

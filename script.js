@@ -7,33 +7,50 @@ const filterButtons = document.querySelectorAll('.filter');
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
 
-// Pobieranie kursów walut
+// Pobieranie kursów walut z API NBP
 async function getExchangeRates() {
-    const rates = {
-        PLN: 1,
-        USD: 4.5,
-        EUR: 4.8,
-    };
-    console.log("Pobrane kursy walut:", rates);
-    return rates;
+    try {
+        const response = await fetch('https://api.nbp.pl/api/exchangerates/tables/A/?format=json');
+        const data = await response.json();
+        const rates = data[0].rates.reduce((acc, rate) => {
+            acc[rate.code] = rate.mid;
+            return acc;
+        }, { PLN: 1 });
+        console.log("Pobrane kursy walut:", rates);
+        return rates;
+    } catch (error) {
+        console.error("Błąd podczas pobierania kursów walut:", error);
+        return { PLN: 1, USD: 4.5, EUR: 4.8 }; // Domyślne kursy walut
+    }
 }
 
 // Aktualizacja salda
 async function updateBalance() {
-    const rates = await getExchangeRates();
-    const balance = transactions.reduce((total, transaction) => {
-        const rate = rates[transaction.currency] || 1;
-        return total + (transaction.amount * rate);
-    }, 0);
-    balanceElement.textContent = `${balance.toFixed(2)} zł`;
+    try {
+        const rates = await getExchangeRates();
+        const balance = transactions.reduce((total, transaction) => {
+            const rate = rates[transaction.currency] || 1;
+            return total + (transaction.amount * rate);
+        }, 0);
+        balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    balanceElement.className = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero';
-    console.log("Aktualne saldo:", balance);
+        if (balance > 0) {
+            balanceElement.className = 'positive';
+        } else if (balance < 0) {
+            balanceElement.className = 'negative';
+        } else {
+            balanceElement.className = 'zero';
+        }
+        console.log("Aktualne saldo:", balance);
+    } catch (error) {
+        console.error("Błąd podczas aktualizacji salda:", error);
+        document.getElementById('form-errors').innerHTML = `<p>Nie udało się zaktualizować salda. Spróbuj ponownie później.</p>`;
+    }
 }
 
 // Renderowanie transakcji
 function renderTransactions(filter = 'all') {
-    transactionList.innerHTML = ''; // Czyści listę transakcji
+    transactionList.innerHTML = '';
     const filteredTransactions = transactions.filter(transaction =>
         filter === 'all' ||
         (filter === 'income' && transaction.amount > 0) ||
@@ -105,6 +122,7 @@ async function addTransaction(e) {
         convertedAmount,
         category,
         currency,
+        date: new Date().toISOString().split('T')[0], // Dodanie daty transakcji
     };
 
     transactions.push(transaction);
@@ -174,6 +192,24 @@ function updateChart() {
         },
     });
 }
+
+// Obsługa filtrowania
+document.getElementById('apply-filters').addEventListener('click', () => {
+    const dateFilter = document.getElementById('date-filter').value;
+    const categoryFilter = document.getElementById('category-filter').value;
+    const amountMin = parseFloat(document.getElementById('amount-min').value);
+    const amountMax = parseFloat(document.getElementById('amount-max').value);
+
+    const filteredTransactions = transactions.filter(transaction => {
+        const matchesDate = dateFilter ? transaction.date === dateFilter : true;
+        const matchesCategory = categoryFilter !== 'all' ? transaction.category === categoryFilter : true;
+        const matchesAmount = (!isNaN(amountMin) ? transaction.amount >= amountMin : true) &&
+                              (!isNaN(amountMax) ? transaction.amount <= amountMax : true);
+        return matchesDate && matchesCategory && matchesAmount;
+    });
+
+    renderTransactions(filteredTransactions);
+});
 
 // Inicjalizacja
 transactionForm.addEventListener('submit', addTransaction);
