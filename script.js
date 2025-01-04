@@ -17,8 +17,7 @@ async function pobierzKursyWalut() {
 }
 
 // Funkcja przeliczania waluty na PLN
-async function przeliczWalute(kwota, waluta) {
-    const kursy = await pobierzKursyWalut();
+function przeliczWalute(kwota, waluta, kursy) {
     const kurs = kursy[waluta];
     if (!kurs) {
         console.error(`Nieznana waluta: ${waluta}`);
@@ -29,6 +28,7 @@ async function przeliczWalute(kwota, waluta) {
 
 // Aktualizacja salda
 async function aktualizujSaldo() {
+    const kursy = await pobierzKursyWalut();
     const saldo = transactions.reduce((suma, transakcja) => suma + transakcja.amountInPLN, 0);
     balanceElement.textContent = `${saldo.toFixed(2)} zł`;
 
@@ -55,7 +55,7 @@ function dodajTransakcjeDoListy(transakcja) {
             <div class="transaction-category">${transakcja.category}</div>
         </div>
         <div class="transaction-amount ${transakcja.amountInPLN > 0 ? 'positive' : 'negative'}">
-            ${transakcja.amountInPLN > 0 ? '+' : ''}${transakcja.originalAmount.toFixed(2)} ${transakcja.currency} 
+            ${transakcja.amount > 0 ? '+' : ''}${transakcja.amount.toFixed(2)} ${transakcja.currency} 
             (<span>${transakcja.amountInPLN.toFixed(2)} PLN</span>)
         </div>
         <div class="transaction-actions">
@@ -136,12 +136,13 @@ transactionForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    const przeliczonaKwota = await przeliczWalute(kwota, waluta);
+    const kursy = await pobierzKursyWalut();
+    const przeliczonaKwota = przeliczWalute(kwota, waluta, kursy);
 
     const transakcja = {
         id: Date.now().toString(),
         description: opis,
-        originalAmount: kwota,
+        amount: kwota,
         amountInPLN: przeliczonaKwota,
         category: kategoria,
         currency: waluta,
@@ -161,7 +162,7 @@ function edytujTransakcje(id) {
     if (!transakcja) return;
 
     document.getElementById('description').value = transakcja.description;
-    document.getElementById('amount').value = transakcja.originalAmount;
+    document.getElementById('amount').value = transakcja.amount;
     document.getElementById('category').value = transakcja.category;
     document.getElementById('currency').value = transakcja.currency;
 
