@@ -158,13 +158,20 @@ transactionForm.addEventListener('submit', (e) => {
 
 function convertCurrency(amount, currency) {
     const exchangeRates = {
-        PLN: 1,
-        USD: 4.5,
-        EUR: 4.8,
+        PLN: 1, // Podstawowa waluta
+        USD: 4.5, // Przykładowy kurs
+        EUR: 4.8, // Przykładowy kurs
     };
 
-    if (currency === 'PLN') return amount; // Bez przeliczania dla PLN
-    return parseFloat((amount * exchangeRates[currency]).toFixed(2));
+    if (!exchangeRates[currency]) {
+        console.error(`Nieznana waluta: ${currency}`);
+        return amount; // Jeśli waluta nie jest znana, zwróć oryginalną kwotę
+    }
+
+    const convertedAmount = amount * exchangeRates[currency];
+    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
+    console.log(`Po przeliczeniu: ${convertedAmount}`);
+    return convertedAmount;
 }
 
 function editTransaction(id) {
