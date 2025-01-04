@@ -1,5 +1,5 @@
 const balanceElement = document.getElementById('balance');
-const transactionForm = document.getElementById('transaction-form'); // Usunięcie dodatkowej deklaracji
+const transactionForm = document.getElementById('transaction-form');
 const transactionList = document.getElementById('transaction-list');
 const exportCsvButton = document.getElementById('export-csv');
 const exportExcelButton = document.getElementById('export-excel');
@@ -10,6 +10,7 @@ let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let balance = 0;
 let chart;
 
+// Funkcja aktualizująca saldo
 function updateBalance() {
     balance = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     balanceElement.textContent = `${balance.toFixed(2)} zł`;
@@ -23,6 +24,7 @@ function updateBalance() {
     }
 }
 
+// Dodanie transakcji do listy
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
     const categoryIcon = document.querySelector(
@@ -46,18 +48,21 @@ function addTransactionToList(transaction) {
     transactionList.appendChild(li);
 }
 
+// Usunięcie transakcji
 function removeTransaction(id) {
     transactions = transactions.filter(transaction => transaction.id !== id);
     saveTransactions();
     renderTransactions();
-    updateChart();
     updateBalance();
+    updateChart();
 }
 
+// Zapisanie transakcji w localStorage
 function saveTransactions() {
     localStorage.setItem('transactions', JSON.stringify(transactions));
 }
 
+// Wyświetlanie transakcji na podstawie filtra
 function renderTransactions(filter = 'all') {
     transactionList.innerHTML = '';
     const filteredTransactions = transactions.filter(transaction =>
@@ -68,6 +73,7 @@ function renderTransactions(filter = 'all') {
     filteredTransactions.forEach(addTransactionToList);
 }
 
+// Aktualizacja wykresu
 function updateChart() {
     if (!ctx || typeof Chart === 'undefined') {
         console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
@@ -96,33 +102,30 @@ function updateChart() {
     });
 }
 
+// Aktualizacja podsumowania kategorii
 function updateCategorySummary() {
-  const summaryList = document.getElementById('summary-list');
-  const categories = {};
+    const summaryList = document.getElementById('summary-list');
+    const categories = {};
 
-  // Oblicz sumy dla każdej kategorii
-  transactions.forEach(({ amount, category }) => {
-    if (amount < 0) {
-      categories[category] = (categories[category] || 0) + Math.abs(amount);
+    transactions.forEach(({ amount, category }) => {
+        if (amount < 0) {
+            categories[category] = (categories[category] || 0) + Math.abs(amount);
+        }
+    });
+
+    summaryList.innerHTML = '';
+
+    for (const [category, total] of Object.entries(categories)) {
+        const li = document.createElement('li');
+        li.innerHTML = `
+            <span>${category}</span>
+            <span>${total.toFixed(2)} zł</span>
+        `;
+        summaryList.appendChild(li);
     }
-  });
-
-  console.log('Kategorie:', categories); // Dodaj log
-
-  // Wyczyść listę podsumowania
-  summaryList.innerHTML = '';
-
-  // Dodaj podsumowanie do listy
-  for (const [category, total] of Object.entries(categories)) {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <span>${category}</span>
-      <span>${total.toFixed(2)} zł</span>
-    `;
-    summaryList.appendChild(li);
-  }
 }
 
+// Obsługa formularza dodawania transakcji
 transactionForm.addEventListener('submit', (e) => {
     e.preventDefault();
 
@@ -136,9 +139,7 @@ transactionForm.addEventListener('submit', (e) => {
         return;
     }
 
-    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
     const convertedAmount = convertCurrency(amount, currency);
-    console.log(`Po przeliczeniu: ${convertedAmount}`);
 
     const transaction = {
         id: Date.now().toString(),
@@ -156,30 +157,29 @@ transactionForm.addEventListener('submit', (e) => {
     transactionForm.reset();
 });
 
+// Przeliczanie waluty
 function convertCurrency(amount, currency) {
     const exchangeRates = {
-        PLN: 1, // Podstawowa waluta
-        USD: 4.5, // Przykładowy kurs
-        EUR: 4.8, // Przykładowy kurs
+        PLN: 1,
+        USD: 4.5,
+        EUR: 4.8,
     };
 
     if (!exchangeRates[currency]) {
         console.error(`Nieznana waluta: ${currency}`);
-        return amount; // Jeśli waluta nie jest znana, zwróć oryginalną kwotę
+        return amount;
     }
 
-    const convertedAmount = amount * exchangeRates[currency];
-    console.log(`Przed przeliczeniem: ${amount}, Waluta: ${currency}`);
-    console.log(`Po przeliczeniu: ${convertedAmount}`);
-    return convertedAmount;
+    return amount / exchangeRates[currency];
 }
 
+// Edycja transakcji
 function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
     if (!transaction) return;
 
     document.getElementById('description').value = transaction.description;
-    document.getElementById('amount').value = transaction.amount; // Używaj przeliczonej wartości
+    document.getElementById('amount').value = transaction.amount;
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
 
@@ -190,6 +190,7 @@ function editTransaction(id) {
     updateChart();
 }
 
+// Filtry transakcji
 filterButtons.forEach(button => {
     button.addEventListener('click', () => {
         filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -198,6 +199,7 @@ filterButtons.forEach(button => {
     });
 });
 
+// Inicjalizacja
 renderTransactions();
 updateBalance();
 updateChart();
