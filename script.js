@@ -114,6 +114,18 @@ function renderTransactions(filter = 'all') {
     filteredTransactions.forEach(transaction => addTransactionToList(transaction));
 }
 
+async function convertCurrency(amount, currency) {
+    const rates = await getExchangeRates();
+    const rate = rates[currency];
+    if (!rate) {
+        console.error(`Nieznana waluta: ${currency}`);
+        return amount;
+    }
+    const convertedAmount = amount * rate;
+    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
+    return convertedAmount;
+}
+
 // Dodanie transakcji do listy
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
