@@ -7,10 +7,65 @@ const dateFilter = document.getElementById('date-filter');
 const amountMinFilter = document.getElementById('amount-min');
 const amountMaxFilter = document.getElementById('amount-max');
 const applyFiltersButton = document.getElementById('apply-filters');
+const loginForm = document.getElementById('login-form');
+const userSelect = document.getElementById('user-select');
 
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let users = JSON.parse(localStorage.getItem('users')) || {};
+let currentUser = null;
+let transactions = [];
 let chart;
-let editTransactionId = null; // Id transakcji aktualnie edytowanej
+
+// Funkcja inicjalizująca
+function initialize() {
+    if (loginForm && userSelect) {
+        renderUserOptions();
+        loginForm.addEventListener('submit', loginUser);
+    }
+    transactionForm?.addEventListener('submit', addTransaction);
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            renderTransactions(button.dataset.filter);
+        });
+    });
+    applyFiltersButton?.addEventListener('click', (e) => {
+        e.preventDefault();
+        renderTransactions();
+    });
+
+    if (currentUser) {
+        transactions = users[currentUser]?.transactions || [];
+        renderTransactions();
+        updateBalance();
+        updateChart();
+    }
+}
+
+// Funkcja logowania użytkownika
+function loginUser(e) {
+    e.preventDefault();
+    const selectedUser = userSelect.value;
+
+    if (!users[selectedUser]) {
+        users[selectedUser] = { transactions: [] };
+    }
+    currentUser = selectedUser;
+    transactions = users[currentUser].transactions;
+    saveUsers();
+    initialize();
+}
+
+// Funkcja renderowania opcji użytkowników
+function renderUserOptions() {
+    userSelect.innerHTML = '';
+    Object.keys(users).forEach(user => {
+        const option = document.createElement('option');
+        option.value = user;
+        option.textContent = user;
+        userSelect.appendChild(option);
+    });
+}
 
 // Pobieranie kursów walut z API NBP
 async function getExchangeRates() {
@@ -20,42 +75,28 @@ async function getExchangeRates() {
         const rates = data[0].rates.reduce((acc, rate) => {
             acc[rate.code] = rate.mid;
             return acc;
-        }, { PLN: 1 }); // Dodanie PLN jako domyślnej waluty
-        console.log("Pobrane kursy walut:", rates);
+        }, { PLN: 1 });
         return rates;
     } catch (error) {
         console.error("Błąd podczas pobierania kursów walut:", error);
-        return { PLN: 1, USD: 4.5, EUR: 4.8 }; // Domyślne kursy walut
+        return { PLN: 1, USD: 4.5, EUR: 4.8 };
     }
 }
 
 // Aktualizacja salda
 async function updateBalance() {
-    try {
-        const rates = await getExchangeRates();
-        const balance = transactions.reduce((total, transaction) => {
-            const rate = rates[transaction.currency] || 1;
-            return total + (transaction.amount * rate);
-        }, 0);
-        balanceElement.textContent = `${balance.toFixed(2)} zł`;
-
-        if (balance > 0) {
-            balanceElement.className = 'positive';
-        } else if (balance < 0) {
-            balanceElement.className = 'negative';
-        } else {
-            balanceElement.className = 'zero';
-        }
-        console.log("Aktualne saldo:", balance);
-    } catch (error) {
-        console.error("Błąd podczas aktualizacji salda:", error);
-        document.getElementById('form-errors').innerHTML = `<p>Nie udało się zaktualizować salda. Spróbuj ponownie później.</p>`;
-    }
+    const rates = await getExchangeRates();
+    const balance = transactions.reduce((total, transaction) => {
+        const rate = rates[transaction.currency] || 1;
+        return total + (transaction.amount * rate);
+    }, 0);
+    balanceElement.textContent = `${balance.toFixed(2)} zł`;
+    balanceElement.className = balance > 0 ? 'positive' : balance < 0 ? 'negative' : 'zero';
 }
 
 // Renderowanie transakcji z filtrami
 function renderTransactions(filter = 'all') {
-    transactionList.innerHTML = ''; // Czyści listę transakcji
+    transactionList.innerHTML = '';
     const filteredTransactions = transactions.filter(transaction => {
         const meetsTypeFilter =
             filter === 'all' ||
@@ -70,26 +111,20 @@ function renderTransactions(filter = 'all') {
         return meetsTypeFilter && meetsDateFilter && meetsAmountFilter;
     });
 
-    console.log("Filtrowane transakcje:", filteredTransactions);
-
     filteredTransactions.forEach(transaction => addTransactionToList(transaction));
 }
 
 // Dodanie transakcji do listy
 function addTransactionToList(transaction) {
     const li = document.createElement('li');
-    const categoryIcon = document.querySelector(
-        `option[value="${transaction.category}"]`
-    )?.getAttribute("data-icon") || "❓";
-
     li.innerHTML = `
-        <span class="transaction-icon">${categoryIcon}</span>
+        <span class="transaction-icon">${transaction.categoryIcon || '❓'}</span>
         <div class="transaction-details">
             <div class="transaction-description">${transaction.description}</div>
             <div class="transaction-category">${transaction.category}</div>
         </div>
         <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
-            ${transaction.amount.toFixed(2)} ${transaction.currency} 
+            ${transaction.amount.toFixed(2)} ${transaction.currency}
             (${transaction.convertedAmount.toFixed(2)} PLN)
         </div>
         <div class="transaction-actions">
@@ -100,23 +135,9 @@ function addTransactionToList(transaction) {
     transactionList.appendChild(li);
 }
 
-// Przeliczanie waluty na PLN
-async function convertCurrency(amount, currency) {
-    const rates = await getExchangeRates();
-    const rate = rates[currency];
-    if (!rate) {
-        console.error(`Nieznana waluta: ${currency}`);
-        return amount;
-    }
-    const convertedAmount = amount * rate;
-    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
-    return convertedAmount;
-}
-
 // Dodawanie lub edytowanie transakcji
 async function addTransaction(e) {
     e.preventDefault();
-
     const description = document.getElementById('description').value.trim();
     const amount = parseFloat(document.getElementById('amount').value);
     const category = document.getElementById('category').value;
@@ -129,31 +150,21 @@ async function addTransaction(e) {
     }
 
     const convertedAmount = await convertCurrency(amount, currency);
+    const transaction = {
+        id: editTransactionId || Date.now().toString(),
+        description,
+        amount,
+        convertedAmount,
+        category,
+        currency,
+        date,
+    };
 
     if (editTransactionId) {
-        const transactionIndex = transactions.findIndex(t => t.id === editTransactionId);
-        if (transactionIndex > -1) {
-            transactions[transactionIndex] = {
-                id: editTransactionId,
-                description,
-                amount,
-                convertedAmount,
-                category,
-                currency,
-                date,
-            };
-            editTransactionId = null;
-        }
+        const index = transactions.findIndex(t => t.id === editTransactionId);
+        transactions[index] = transaction;
+        editTransactionId = null;
     } else {
-        const transaction = {
-            id: Date.now().toString(),
-            description,
-            amount,
-            convertedAmount,
-            category,
-            currency,
-            date,
-        };
         transactions.push(transaction);
     }
 
@@ -173,8 +184,7 @@ function editTransaction(id) {
     document.getElementById('amount').value = transaction.amount;
     document.getElementById('category').value = transaction.category;
     document.getElementById('currency').value = transaction.currency;
-    document.getElementById('date-filter').value = transaction.date || "";
-
+    document.getElementById('date-filter').value = transaction.date;
     editTransactionId = id;
 }
 
@@ -187,18 +197,9 @@ function removeTransaction(id) {
     updateChart();
 }
 
-// Zapisywanie transakcji do localStorage
-function saveTransactions() {
-    localStorage.setItem('transactions', JSON.stringify(transactions));
-    console.log("Zapisano transakcje:", transactions);
-}
-
 // Aktualizacja wykresu
 function updateChart() {
-    if (!ctx || typeof Chart === 'undefined') {
-        console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
-        return;
-    }
+    if (!ctx || typeof Chart === 'undefined') return;
 
     const categories = {};
     transactions.forEach(({ convertedAmount, category }) => {
@@ -213,32 +214,25 @@ function updateChart() {
         type: 'pie',
         data: {
             labels: Object.keys(categories),
-            datasets: [
-                {
-                    label: 'Wydatki według kategorii',
-                    data: Object.values(categories),
-                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
-                },
-            ],
+            datasets: [{
+                label: 'Wydatki według kategorii',
+                data: Object.values(categories),
+                backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
+            }],
         },
     });
 }
 
-// Inicjalizacja
-transactionForm.addEventListener('submit', addTransaction);
-filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        renderTransactions(button.dataset.filter);
-    });
-});
+// Zapis użytkowników i transakcji
+function saveUsers() {
+    localStorage.setItem('users', JSON.stringify(users));
+}
 
-applyFiltersButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    renderTransactions();
-});
+function saveTransactions() {
+    if (currentUser) {
+        users[currentUser].transactions = transactions;
+        saveUsers();
+    }
+}
 
-renderTransactions();
-updateBalance();
-updateChart();
+initialize();
