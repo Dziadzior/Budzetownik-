@@ -7,191 +7,167 @@ const filterButtons = document.querySelectorAll('.filter');
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
 
-// Funkcja do pobierania kursów wymiany walut
-async function pobierzKursyWalut() {
-    const kursy = {
+// Pobieranie kursów walut
+async function getExchangeRates() {
+    const rates = {
         PLN: 1,
-        USD: 4.5, // Przykładowy kurs
-        EUR: 4.8  // Przykładowy kurs
+        USD: 4.5,
+        EUR: 4.8
     };
-    console.log("Pobrane kursy walut:", kursy);
-    return kursy;
+    console.log("Pobrane kursy walut:", rates);
+    return rates;
 }
 
-// Funkcja przeliczania waluty na PLN
-async function przeliczWalute(kwota, waluta) {
-    const kursy = await pobierzKursyWalut();
-    const kurs = kursy[waluta];
-    if (!kurs) {
-        console.error(`Nieznana waluta: ${waluta}`);
-        return kwota;
+// Przeliczanie walut
+async function convertCurrency(amount, currency) {
+    const rates = await getExchangeRates();
+    const rate = rates[currency];
+    if (!rate) {
+        console.error(`Nieznana waluta: ${currency}`);
+        return amount;
     }
-    const przeliczonaKwota = parseFloat((kwota * kurs).toFixed(2));
-    console.log(`Przeliczono: ${kwota} ${waluta} na ${przeliczonaKwota} PLN`);
-    return przeliczonaKwota;
+    const convertedAmount = amount * rate;
+    console.log(`Przeliczono: ${amount} ${currency} na ${convertedAmount.toFixed(2)} PLN`);
+    return convertedAmount;
 }
 
 // Aktualizacja salda
-async function aktualizujSaldo() {
-    const kursy = await pobierzKursyWalut();
-    const saldo = transactions.reduce((suma, transakcja) => {
-        const kurs = kursy[transakcja.currency] || 1;
-        return suma + parseFloat((transakcja.amount * kurs).toFixed(2));
+async function updateBalance() {
+    const rates = await getExchangeRates();
+    const balance = transactions.reduce((total, transaction) => {
+        const rate = rates[transaction.currency] || 1;
+        return total + (transaction.amount * rate);
     }, 0);
-    balanceElement.textContent = `${saldo.toFixed(2)} zł`;
+    balanceElement.textContent = `${balance.toFixed(2)} zł`;
 
-    if (saldo > 0) {
+    if (balance > 0) {
         balanceElement.className = 'positive';
-    } else if (saldo < 0) {
+    } else if (balance < 0) {
         balanceElement.className = 'negative';
     } else {
         balanceElement.className = 'zero';
     }
-    console.log("Aktualne saldo:", saldo);
+    console.log("Aktualne saldo:", balance);
 }
 
-// Dodawanie transakcji do listy
-function dodajTransakcjeDoListy(transakcja) {
+// Dodanie transakcji do listy
+function addTransactionToList(transaction) {
     const li = document.createElement('li');
-    const ikonaKategorii = document.querySelector(
-        `option[value="${transakcja.category}"]`
+    const categoryIcon = document.querySelector(
+        `option[value="${transaction.category}"]`
     )?.getAttribute("data-icon") || "❓";
 
     li.innerHTML = `
-        <span class="transaction-icon">${ikonaKategorii}</span>
+        <span class="transaction-icon">${categoryIcon}</span>
         <div class="transaction-details">
-            <div class="transaction-description">${transakcja.description}</div>
-            <div class="transaction-category">${transakcja.category}</div>
+            <div class="transaction-description">${transaction.description}</div>
+            <div class="transaction-category">${transaction.category}</div>
         </div>
-        <div class="transaction-amount ${transakcja.amount > 0 ? 'positive' : 'negative'}">
-            ${transakcja.amount > 0 ? '+' : ''}${transakcja.amount.toFixed(2)} ${transakcja.currency} (${transakcja.convertedAmount.toFixed(2)} PLN)
+        <div class="transaction-amount ${transaction.amount > 0 ? 'positive' : 'negative'}">
+            ${transaction.amount.toFixed(2)} ${transaction.currency} (${transaction.convertedAmount.toFixed(2)} PLN)
         </div>
         <div class="transaction-actions">
-            <button class="edit-btn" onclick="edytujTransakcje('${transakcja.id}')">Edytuj</button>
-            <button class="delete-btn" onclick="usunTransakcje('${transakcja.id}')">Usuń</button>
+            <button class="edit-btn" onclick="editTransaction('${transaction.id}')">Edytuj</button>
+            <button class="delete-btn" onclick="removeTransaction('${transaction.id}')">Usuń</button>
         </div>
     `;
     transactionList.appendChild(li);
 }
 
 // Usuwanie transakcji
-function usunTransakcje(id) {
-    transactions = transactions.filter(transakcja => transakcja.id !== id);
-    zapiszTransakcje();
-    renderujTransakcje();
-    aktualizujSaldo();
-    aktualizujWykres();
+function removeTransaction(id) {
+    transactions = transactions.filter(transaction => transaction.id !== id);
+    saveTransactions();
+    renderTransactions();
+    updateBalance();
+    updateChart();
 }
 
 // Zapisywanie transakcji do localStorage
-function zapiszTransakcje() {
+function saveTransactions() {
     localStorage.setItem('transactions', JSON.stringify(transactions));
 }
 
 // Renderowanie transakcji
-function renderujTransakcje(filtr = 'all') {
+function renderTransactions(filter = 'all') {
     transactionList.innerHTML = '';
-    const przefiltrowaneTransakcje = transactions.filter(transakcja =>
-        filtr === 'all' ||
-        (filtr === 'income' && transakcja.amount > 0) ||
-        (filtr === 'expense' && transakcja.amount < 0)
+    const filteredTransactions = transactions.filter(transaction =>
+        filter === 'all' ||
+        (filter === 'income' && transaction.amount > 0) ||
+        (filter === 'expense' && transaction.amount < 0)
     );
-    przefiltrowaneTransakcje.forEach(dodajTransakcjeDoListy);
+    console.log("Filtrowane transakcje:", filteredTransactions);
+    filteredTransactions.forEach(addTransactionToList);
 }
 
 // Aktualizacja wykresu
-function aktualizujWykres() {
+function updateChart() {
     if (!ctx || typeof Chart === 'undefined') {
         console.error('Chart.js nie jest załadowany lub element canvas jest niedostępny');
         return;
     }
 
-    const kategorie = {};
-    transactions.forEach(({ amount, category, convertedAmount }) => {
-        if (amount < 0) {
-            kategorie[category] = (kategorie[category] || 0) + convertedAmount;
+    const categories = {};
+    transactions.forEach(({ convertedAmount, category }) => {
+        if (convertedAmount < 0) {
+            categories[category] = (categories[category] || 0) + Math.abs(convertedAmount);
         }
     });
 
     if (chart) chart.destroy();
 
+    console.log("Dane do wykresu:", categories);
+
     chart = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: Object.keys(kategorie),
+            labels: Object.keys(categories),
             datasets: [
                 {
                     label: 'Wydatki według kategorii',
-                    data: Object.values(kategorie),
+                    data: Object.values(categories),
                     backgroundColor: ['#ff6384', '#36a2eb', '#ffce56', '#4caf50', '#ff5722'],
                 },
             ],
         },
     });
-    console.log("Dane do wykresu:", kategorie);
 }
 
 // Obsługa formularza dodawania transakcji
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const opis = document.getElementById('description').value.trim();
-    const kwota = parseFloat(document.getElementById('amount').value);
-    const kategoria = document.getElementById('category').value;
-    const waluta = document.getElementById('currency').value;
+    const description = document.getElementById('description').value.trim();
+    const amount = parseFloat(document.getElementById('amount').value);
+    const category = document.getElementById('category').value;
+    const currency = document.getElementById('currency').value;
 
-    if (!opis || isNaN(kwota) || !kategoria || !waluta) {
+    if (!description || isNaN(amount) || !category || !currency) {
         alert('Wypełnij wszystkie pola!');
         return;
     }
 
-    const przeliczonaKwota = await przeliczWalute(kwota, waluta);
+    const convertedAmount = await convertCurrency(amount, currency);
 
-    const transakcja = {
+    const transaction = {
         id: Date.now().toString(),
-        description: opis,
-        amount: kwota,
-        convertedAmount: przeliczonaKwota,
-        category: kategoria,
-        currency: waluta,
+        description,
+        amount,
+        convertedAmount,
+        category,
+        currency,
     };
 
-    transactions.push(transakcja);
-    zapiszTransakcje();
-    renderujTransakcje();
-    aktualizujSaldo();
-    aktualizujWykres();
+    transactions.push(transaction);
+    console.log("Dodano transakcję:", transaction);
+    saveTransactions();
+    renderTransactions();
+    updateBalance();
+    updateChart();
     transactionForm.reset();
-    console.log("Dodano transakcję:", transakcja);
-});
-
-// Edycja transakcji
-function edytujTransakcje(id) {
-    const transakcja = transactions.find(t => t.id === id);
-    if (!transakcja) return;
-
-    document.getElementById('description').value = transakcja.description;
-    document.getElementById('amount').value = transakcja.amount;
-    document.getElementById('category').value = transakcja.category;
-    document.getElementById('currency').value = transakcja.currency;
-
-    transactions = transactions.filter(t => t.id !== id);
-    zapiszTransakcje();
-    renderujTransakcje();
-    aktualizujSaldo();
-    aktualizujWykres();
-}
-
-// Obsługa filtrów
-filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        renderujTransakcje(button.dataset.filter);
-    });
 });
 
 // Inicjalizacja
-renderujTransakcje();
-aktualizujSaldo();
-aktualizujWykres();
+renderTransactions();
+updateBalance();
+updateChart();
