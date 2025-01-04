@@ -7,7 +7,6 @@ const filterButtons = document.querySelectorAll('.filter');
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let chart;
 
-// Funkcja do pobierania kursów wymiany walut
 async function pobierzKursyWalut() {
     const kursy = {
         PLN: 1,
@@ -18,7 +17,6 @@ async function pobierzKursyWalut() {
     return kursy;
 }
 
-// Funkcja przeliczania waluty na PLN
 async function przeliczWalute(kwota, waluta) {
     const kursy = await pobierzKursyWalut();
     const kurs = kursy[waluta];
@@ -31,7 +29,6 @@ async function przeliczWalute(kwota, waluta) {
     return przeliczonaKwota;
 }
 
-// Aktualizacja salda
 async function aktualizujSaldo() {
     const kursy = await pobierzKursyWalut();
     const saldo = transactions.reduce((suma, transakcja) => {
@@ -50,7 +47,6 @@ async function aktualizujSaldo() {
     console.log('Aktualne saldo:', saldo);
 }
 
-// Dodawanie transakcji do listy
 function dodajTransakcjeDoListy(transakcja) {
     const li = document.createElement('li');
     const ikonaKategorii = document.querySelector(
@@ -75,7 +71,22 @@ function dodajTransakcjeDoListy(transakcja) {
     transactionList.appendChild(li);
 }
 
-// Obsługa formularza dodawania transakcji
+function zapiszTransakcje() {
+    localStorage.setItem('transactions', JSON.stringify(transactions));
+    console.log('Zapisano transakcje w localStorage:', transactions);
+}
+
+function renderujTransakcje(filtr = 'all') {
+    transactionList.innerHTML = '';
+    const przefiltrowaneTransakcje = transactions.filter(transakcja =>
+        filtr === 'all' ||
+        (filtr === 'income' && transakcja.amount > 0) ||
+        (filtr === 'expense' && transakcja.amount < 0)
+    );
+    console.log('Filtrowane transakcje:', przefiltrowaneTransakcje);
+    przefiltrowaneTransakcje.forEach(dodajTransakcjeDoListy);
+}
+
 transactionForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -104,11 +115,9 @@ transactionForm.addEventListener('submit', async (e) => {
     zapiszTransakcje();
     renderujTransakcje();
     aktualizujSaldo();
-    aktualizujWykres();
     transactionForm.reset();
-});
+}
 
 // Inicjalizacja
 renderujTransakcje();
 aktualizujSaldo();
-aktualizujWykres();
