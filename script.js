@@ -28,7 +28,6 @@ function przeliczWalute(kwota, waluta, kursy) {
 
 // Aktualizacja salda
 async function aktualizujSaldo() {
-    const kursy = await pobierzKursyWalut();
     const saldo = transactions.reduce((suma, transakcja) => suma + transakcja.amountInPLN, 0);
     balanceElement.textContent = `${saldo.toFixed(2)} zł`;
 
