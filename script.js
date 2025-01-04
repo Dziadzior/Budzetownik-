@@ -55,7 +55,8 @@ function dodajTransakcjeDoListy(transakcja) {
             <div class="transaction-category">${transakcja.category}</div>
         </div>
         <div class="transaction-amount ${transakcja.amountInPLN > 0 ? 'positive' : 'negative'}">
-            ${transakcja.amountInPLN > 0 ? '+' : ''}${transakcja.originalAmount.toFixed(2)} ${transakcja.currency}
+            ${transakcja.amountInPLN > 0 ? '+' : ''}${transakcja.originalAmount.toFixed(2)} ${transakcja.currency} 
+            (<span>${transakcja.amountInPLN.toFixed(2)} PLN</span>)
         </div>
         <div class="transaction-actions">
             <button class="edit-btn" onclick="edytujTransakcje('${transakcja.id}')">Edytuj</button>
